@@ -8,7 +8,7 @@ public class Lexer {
     private int position;
 
     private TokenKind[] spec = TokenKind.values();
-    private List<TokenKind> kinds = new ArrayList<>();
+    private List<Token> tokens = new ArrayList<>();
 
     public Lexer(String input) {
         this.input = input;
@@ -27,7 +27,8 @@ public class Lexer {
             }
 
             if (string.length() > 0 || pos == input.length()) {
-                kinds.add(specification(string.toString()));
+                String field = string.toString();
+                tokens.add(new Token(specification(field), field));
                 string = new StringBuilder();
             }
         }
@@ -41,7 +42,7 @@ public class Lexer {
         throw new IllegalStateException("Unknown token: " + string);
     }
 
-    public TokenKind current() {
-        return kinds.get(position++);
+    public Token current() {
+        return tokens.get(position++);
     }
 }

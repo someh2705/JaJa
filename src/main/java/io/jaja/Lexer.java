@@ -32,6 +32,8 @@ public class Lexer {
                 string = new StringBuilder();
             }
         }
+
+        tokens.add(new Token(TokenKind.EOF, null));
     }
 
     private TokenKind specification(String string) {
@@ -44,5 +46,9 @@ public class Lexer {
 
     public Token current() {
         return tokens.get(position++);
+    }
+
+    public List<Token> every() {
+        return tokens;
     }
 }

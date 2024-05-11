@@ -15,5 +15,6 @@ public class LexerTest {
         assertEquals(new Token(TokenKind.INTLITERAL, "20"), lexer.current());
         assertEquals(new Token(TokenKind.STAR, "*"), lexer.current());
         assertEquals(new Token(TokenKind.INTLITERAL, "30"), lexer.current());
+        assertEquals(new Token(TokenKind.EOF, null), lexer.current());
     }
 }

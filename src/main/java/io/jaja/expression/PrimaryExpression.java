@@ -1,6 +1,6 @@
 package io.jaja.expression;
 
-import io.jaja.Token;
+import io.jaja.token.Token;
 import io.jaja.utils.IteratorUtils;
 
 import java.util.Iterator;

@@ -1,6 +1,8 @@
 package io.jaja;
 
 import io.jaja.expression.*;
+import io.jaja.token.Token;
+import io.jaja.token.TokenKind;
 
 import java.util.List;
 

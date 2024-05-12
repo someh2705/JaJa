@@ -1,5 +1,6 @@
 package io.jaja;
 
+import io.jaja.token.TokenKind;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertSame;

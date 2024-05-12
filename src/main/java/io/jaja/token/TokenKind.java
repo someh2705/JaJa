@@ -11,6 +11,7 @@ public enum TokenKind {
     LPAREN("("),
     RPAREN(")"),
     EQ("="),
+    SEMICOLON(";"),
     INT("int"),
     IDENTIFIER(TokenTag.NAMED),
     INTLITERAL(TokenTag.NUMERIC),

@@ -9,8 +9,8 @@ public class RuntimeTest {
     @Test
     void evaluateTest() {
         Runtime runtime = new Runtime();
-        String result = runtime.evaluate("10 + 20");
+        String result = runtime.evaluate("10 + 20 * 30");
 
-        assertEquals("30", result);
+        assertEquals("610", result);
     }
 }

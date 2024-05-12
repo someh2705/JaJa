@@ -10,7 +10,11 @@ public enum TokenKind {
     STAR("*"),
     LPAREN("("),
     RPAREN(")"),
-    INTLITERAL(TokenTag.NUMERIC);
+    EQ("="),
+    INT("int"),
+    IDENTIFIER(TokenTag.NAMED),
+    INTLITERAL(TokenTag.NUMERIC),
+    ;
 
     private final String name;
     private final TokenTag tag;
@@ -33,7 +37,11 @@ public enum TokenKind {
         this.tag = tag;
 
         if (name != null) {
-            pattern = Pattern.compile("^[" + name + "]");
+            if (name.length() == 1) {
+                pattern = Pattern.compile("^[" + name + "]");
+            } else {
+                pattern = Pattern.compile("^" + name);
+            }
         } else {
             switch (tag) {
                 case DEFAULT:
@@ -43,7 +51,10 @@ public enum TokenKind {
                     pattern = Pattern.compile("^\\s+");
                     break;
                 case NUMERIC:
-                    pattern = Pattern.compile("\\d+");
+                    pattern = Pattern.compile("\\b(?:0|-?[1-9][0-9]*)\\b");
+                    break;
+                case NAMED:
+                    pattern = Pattern.compile("^[a-zA-Z_$][a-zA-Z_$0-9]*");
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid token tag: " + tag);

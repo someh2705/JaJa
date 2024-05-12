@@ -4,5 +4,5 @@ public enum TokenTag {
     BLANK,
     DEFAULT,
     NUMERIC,
-    ;
+    NAMED;
 }

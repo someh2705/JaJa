@@ -13,4 +13,18 @@ public class RuntimeTest {
 
         assertEquals("2010", result);
     }
+
+    @Test
+    void declareVariableTest() {
+        Runtime runtime = new Runtime();
+
+        String declare = runtime.evaluate("int number = 10;");
+        assertEquals("number(10)", declare);
+
+        String ask = runtime.evaluate("number");
+        assertEquals("10", ask);
+
+        String modify = runtime.evaluate("number = 20");
+        assertEquals("20", modify);
+    }
 }

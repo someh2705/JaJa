@@ -72,10 +72,7 @@ public class ParserTest {
             parser.parseExpression(),
             DeclareVariableStatement.class,
                 PrimaryExpression.class,
-                AssignmentExpression.class,
-                    PrimaryExpression.class,
-                    PrimaryExpression.class,
-                    PrimaryExpression.class
+                PrimaryExpression.class
         );
     }
 

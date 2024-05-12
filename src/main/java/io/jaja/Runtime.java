@@ -1,8 +1,12 @@
 package io.jaja;
 
 import io.jaja.expression.*;
+import io.jaja.statement.DeclareVariableStatement;
+import io.jaja.token.TokenKind;
 
 public class Runtime {
+
+    private Environment environment = new Environment();
 
     public String evaluate(String input) {
         Parser parser = new Parser(input);
@@ -26,6 +30,14 @@ public class Runtime {
             return evaluatePrimaryExpression((PrimaryExpression) expression);
         }
 
+        if (expression instanceof DeclareVariableStatement) {
+            return evaluateDeclareVariableStatement((DeclareVariableStatement) expression);
+        }
+
+        if (expression instanceof AssignmentExpression) {
+            return evaluateAssignmentExpression((AssignmentExpression) expression);
+        }
+
         throw new IllegalStateException("Unexpected expression : " + expression);
     }
 
@@ -42,10 +54,26 @@ public class Runtime {
     }
 
     private String evaluatePrimaryExpression(PrimaryExpression expression) {
+        if (expression.getToken().kind == TokenKind.IDENTIFIER) {
+            return String.valueOf(environment.call(expression.getToken()));
+        }
+
         return expression.getToken().field;
     }
 
     private String evaluateParenthesesExpression(ParenthesesExpression expression) {
         return evaluate(expression.getExpression());
+    }
+
+    private String evaluateDeclareVariableStatement(DeclareVariableStatement expression) {
+        int evaluate = Integer.parseInt(evaluate(expression.getExpression()));
+        environment.declare(expression.getIdentifier(), evaluate);
+        return expression.getIdentifier().field + "(" + evaluate + ")";
+    }
+
+    private String evaluateAssignmentExpression(AssignmentExpression expression) {
+        int evaluate = Integer.parseInt(evaluate(expression.getExpression()));
+        environment.assignemnt(expression.getIdentifier(), evaluate);
+        return String.valueOf(evaluate);
     }
 }

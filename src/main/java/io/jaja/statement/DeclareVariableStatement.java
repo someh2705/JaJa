@@ -39,4 +39,12 @@ public class DeclareVariableStatement implements Statement {
     public Iterator<Expression> iterator() {
         return IteratorUtils.values(new PrimaryExpression(identifier), expression);
     }
+
+    public Token getIdentifier() {
+        return identifier;
+    }
+
+    public Expression getExpression() {
+        return expression;
+    }
 }

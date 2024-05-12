@@ -44,4 +44,12 @@ public class AssignmentExpression implements Expression {
     public String toString() {
         return "AssignmentExpression";
     }
+
+    public Token getIdentifier() {
+        return identifier;
+    }
+
+    public Expression getExpression() {
+        return expression;
+    }
 }

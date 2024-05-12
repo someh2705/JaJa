@@ -1,6 +1,5 @@
 package io.jaja;
 
-import com.sun.tools.javac.parser.Tokens;
 import io.jaja.expression.*;
 import io.jaja.statement.DeclareVariableStatement;
 import io.jaja.token.Token;
@@ -23,9 +22,11 @@ public class Parser {
 
     private Expression declareVariableStatement() {
         if (match(TokenKind.INT)) {
-            Expression assignment = assignemntExpression();
+            Token identifier = consume();
+            needs(TokenKind.EQ, "=가 필요합니다.");
+            Expression expression = parseExpression();
             needs(TokenKind.SEMICOLON, ";가 필요합니다.");
-            return new DeclareVariableStatement(previous(), assignment);
+            return new DeclareVariableStatement(identifier, expression);
         }
 
         return assignemntExpression();
@@ -35,12 +36,11 @@ public class Parser {
      * <assignment> ::= <additive expression> | <identifier> <assignment operator> <assignment>
      */
     private Expression assignemntExpression() {
-        if (match(TokenKind.IDENTIFIER)) {
-            Token identifier = previous();
-            if (match(TokenKind.EQ)) {
-                Token operator = previous();
+        if (peek().kind == TokenKind.IDENTIFIER) {
+            if (peek(1).kind == TokenKind.EQ) {
+                Token identifier = consume();
+                Token operator = consume();
                 Expression right = assignemntExpression();
-
                 return new AssignmentExpression(identifier, operator, right);
             }
         }

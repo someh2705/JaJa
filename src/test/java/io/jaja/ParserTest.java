@@ -1,6 +1,7 @@
 package io.jaja;
 
 import io.jaja.expression.*;
+import io.jaja.statement.DeclareVariableStatement;
 import io.jaja.utils.Printer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -60,6 +61,21 @@ public class ParserTest {
                 PrimaryExpression.class,
                 PrimaryExpression.class,
                 PrimaryExpression.class
+        );
+    }
+
+    @Test
+    void declareVariableStatementTest() {
+        Parser parser = new Parser("int number = 10;");
+
+        assertTreeOf(
+            parser.parseExpression(),
+            DeclareVariableStatement.class,
+                PrimaryExpression.class,
+                AssignmentExpression.class,
+                    PrimaryExpression.class,
+                    PrimaryExpression.class,
+                    PrimaryExpression.class
         );
     }
 

@@ -1,6 +1,8 @@
 package io.jaja;
 
+import com.sun.tools.javac.parser.Tokens;
 import io.jaja.expression.*;
+import io.jaja.statement.DeclareVariableStatement;
 import io.jaja.token.Token;
 import io.jaja.token.TokenKind;
 
@@ -16,6 +18,16 @@ public class Parser {
     }
 
     public Expression parseExpression() {
+        return declareVariableStatement();
+    }
+
+    private Expression declareVariableStatement() {
+        if (match(TokenKind.INT)) {
+            Expression assignment = assignemntExpression();
+            needs(TokenKind.SEMICOLON, ";가 필요합니다.");
+            return new DeclareVariableStatement(previous(), assignment);
+        }
+
         return assignemntExpression();
     }
 

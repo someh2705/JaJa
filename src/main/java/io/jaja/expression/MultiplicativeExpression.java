@@ -47,4 +47,12 @@ public class MultiplicativeExpression implements Expression {
     public String toString() {
         return "MultiplicativeExpression";
     }
+
+    public Expression getLeft() {
+        return left;
+    }
+
+    public Expression getRight() {
+        return right;
+    }
 }

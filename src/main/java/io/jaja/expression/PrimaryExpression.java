@@ -43,4 +43,8 @@ public class PrimaryExpression implements Expression {
     public String toString() {
         return "PrimaryExpression(Token: " + token + ")";
     }
+
+    public Token getToken() {
+        return token;
+    }
 }

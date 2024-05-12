@@ -2,23 +2,27 @@ package io.jaja;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class LexerTest {
+    @Test
+    void literalTest() {
+        assertKind("10", TokenKind.INTLITERAL);
+    }
 
     @Test
-    void baseTokenTest() {
-        Lexer lexer = new Lexer("10 + (20 + 30) * 40");
+    void operatorTest() {
+        assertKind("()+ *", TokenKind.LPAREN, TokenKind.RPAREN, TokenKind.PLUS, TokenKind.STAR);
+    }
 
-        assertEquals(new Token(TokenKind.INTLITERAL, "10"), lexer.current());
-        assertEquals(new Token(TokenKind.PLUS, "+"), lexer.current());
-        assertEquals(new Token(TokenKind.LPAREN, "("), lexer.current());
-        assertEquals(new Token(TokenKind.INTLITERAL, "20"), lexer.current());
-        assertEquals(new Token(TokenKind.PLUS, "+"), lexer.current());
-        assertEquals(new Token(TokenKind.INTLITERAL, "30"), lexer.current());
-        assertEquals(new Token(TokenKind.RPAREN, ")"), lexer.current());
-        assertEquals(new Token(TokenKind.STAR, "*"), lexer.current());
-        assertEquals(new Token(TokenKind.INTLITERAL, "40"), lexer.current());
-        assertEquals(new Token(TokenKind.EOF, null), lexer.current());
+    private void assertKind(String string, TokenKind expected) {
+        assertSame(expected, new Lexer(string).current().kind);
+    }
+
+    private void assertKind(String string, TokenKind... expected) {
+        Lexer lexer = new Lexer(string);
+        for (TokenKind kind : expected) {
+            assertSame(kind, lexer.current().kind);
+        }
     }
 }

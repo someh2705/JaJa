@@ -40,4 +40,8 @@ public class ParenthesesExpression implements Expression {
     public String toString() {
         return "ParenthesesExpression";
     }
+
+    public Expression getExpression() {
+        return expression;
+    }
 }

@@ -1,9 +1,6 @@
 package io.jaja;
 
-import io.jaja.expression.AdditiveExpression;
-import io.jaja.expression.Expression;
-import io.jaja.expression.MultiplicativeExpression;
-import io.jaja.expression.PrimaryExpression;
+import io.jaja.expression.*;
 
 public class Runtime {
 
@@ -14,21 +11,41 @@ public class Runtime {
 
     private String evaluate(Expression expression) {
         if (expression instanceof AdditiveExpression) {
-            int left = Integer.parseInt(evaluate(((AdditiveExpression) expression).getLeft()));
-            int right = Integer.parseInt(evaluate(((AdditiveExpression) expression).getRight()));
-            return String.valueOf(left + right);
-        }
-
-        if (expression instanceof PrimaryExpression) {
-            return ((PrimaryExpression) expression).getToken().field;
+            return evaluateAdditiveExpression((AdditiveExpression) expression);
         }
 
         if (expression instanceof MultiplicativeExpression) {
-            int left = Integer.parseInt(evaluate(((MultiplicativeExpression) expression).getLeft()));
-            int right = Integer.parseInt(evaluate(((MultiplicativeExpression) expression).getRight()));
-            return String.valueOf(left * right);
+            return evaluateMultiplicativeExpression((MultiplicativeExpression) expression);
+        }
+
+        if (expression instanceof ParenthesesExpression) {
+            return evaluateParenthesesExpression((ParenthesesExpression) expression);
+        }
+
+        if (expression instanceof PrimaryExpression) {
+            return evaluatePrimaryExpression((PrimaryExpression) expression);
         }
 
         throw new IllegalStateException("Unexpected expression : " + expression);
+    }
+
+    private String evaluateAdditiveExpression(AdditiveExpression expression) {
+        int left = Integer.parseInt(evaluate(expression.getLeft()));
+        int right = Integer.parseInt(evaluate(expression.getRight()));
+        return String.valueOf(left + right);
+    }
+
+    private String evaluateMultiplicativeExpression(MultiplicativeExpression expression) {
+        int left = Integer.parseInt(evaluate(expression.getLeft()));
+        int right = Integer.parseInt(evaluate(expression.getRight()));
+        return String.valueOf(left * right);
+    }
+
+    private String evaluatePrimaryExpression(PrimaryExpression expression) {
+        return expression.getToken().field;
+    }
+
+    private String evaluateParenthesesExpression(ParenthesesExpression expression) {
+        return evaluate(expression.getExpression());
     }
 }

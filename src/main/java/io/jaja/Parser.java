@@ -1,9 +1,6 @@
 package io.jaja;
 
-import io.jaja.expression.AdditiveExpression;
-import io.jaja.expression.Expression;
-import io.jaja.expression.MultiplicativeExpression;
-import io.jaja.expression.PrimaryExpression;
+import io.jaja.expression.*;
 
 import java.util.List;
 
@@ -51,9 +48,16 @@ public class Parser {
     }
 
     /**
-     * <primary> ::= <literal>
+     * <primary> ::= <literal> | ( <expression> )
      */
     private Expression parsePrimaryExpression() {
+        if (match(TokenKind.LPAREN)) {
+            Expression expression = parseExpression();
+            needs(TokenKind.RPAREN, ")가 필요합니다.");
+
+            return new ParenthesesExpression(expression);
+        }
+
         return new PrimaryExpression(consume());
     }
 
@@ -84,5 +88,17 @@ public class Parser {
         }
 
         return false;
+    }
+
+    private void needs(TokenKind kind, String message) {
+        if (!check(kind)) {
+            error(message);
+        }
+
+        consume();
+    }
+
+    private void error(String message) {
+        throw new RuntimeException(message);
     }
 }

@@ -44,4 +44,12 @@ public class AdditiveExpression implements Expression {
     public String toString() {
         return "AdditiveExpression";
     }
+
+    public Expression getLeft() {
+        return left;
+    }
+
+    public Expression getRight() {
+        return right;
+    }
 }

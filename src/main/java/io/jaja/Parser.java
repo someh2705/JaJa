@@ -14,6 +14,23 @@ public class Parser {
     }
 
     public Expression parseExpression() {
+        return assignemntExpression();
+    }
+
+    /**
+     * <assignment> ::= <additive expression> | <identifier> <assignment operator> <assignment>
+     */
+    private Expression assignemntExpression() {
+        if (match(TokenKind.IDENTIFIER)) {
+            Token identifier = previous();
+            if (match(TokenKind.EQ)) {
+                Token operator = previous();
+                Expression right = assignemntExpression();
+
+                return new AssignmentExpression(identifier, operator, right);
+            }
+        }
+
         return parseAdditiveExpression();
     }
 

@@ -50,6 +50,19 @@ public class ParserTest {
         );
     }
 
+    @Test
+    void assignmentExpressionTest() {
+        Parser parser = new Parser("number = 20");
+
+        assertTreeOf(
+            parser.parseExpression(),
+            AssignmentExpression.class,
+                PrimaryExpression.class,
+                PrimaryExpression.class,
+                PrimaryExpression.class
+        );
+    }
+
     private void assertTreeOf(Expression expression, Class<? extends Expression>... expected) {
         List<String> names = new ArrayList<>();
 

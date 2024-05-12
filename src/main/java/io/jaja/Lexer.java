@@ -1,5 +1,8 @@
 package io.jaja;
 
+import io.jaja.token.Token;
+import io.jaja.token.TokenKind;
+
 import java.util.ArrayList;
 import java.util.List;
 

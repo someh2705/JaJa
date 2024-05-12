@@ -1,4 +1,4 @@
-package io.jaja;
+package io.jaja.token;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

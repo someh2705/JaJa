@@ -1,4 +1,4 @@
-package io.jaja;
+package io.jaja.token;
 
 public enum TokenTag {
     BLANK,

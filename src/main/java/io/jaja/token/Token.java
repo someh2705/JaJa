@@ -26,9 +26,11 @@ public class Token {
 
     @Override
     public String toString() {
+        String name = field == null ? "EOF" : field.equals("\n") ? "\\n" : field;
+
         return "Token{" +
             "kind=" + kind +
-            ", field='" + field + '\'' +
+            ", field='" + name + '\'' +
             '}';
     }
 }

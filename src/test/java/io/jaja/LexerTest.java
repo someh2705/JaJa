@@ -71,6 +71,6 @@ public class LexerTest {
     }
 
     private void assertBadToken(String string) {
-        assertThrows(IllegalStateException.class, () -> new Lexer(string).current());
+        assertThrows(Diagnostics.class, () -> new Lexer(string).current());
     }
 }

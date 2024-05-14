@@ -38,7 +38,7 @@ public class Runtime {
             return evaluateAssignmentExpression((AssignmentExpression) expression);
         }
 
-        throw new IllegalStateException("Unexpected expression : " + expression);
+        throw new Diagnostics("Unexpected expression : " + expression);
     }
 
     private String evaluateAdditiveExpression(AdditiveExpression expression) {

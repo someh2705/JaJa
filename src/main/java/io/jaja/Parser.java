@@ -130,6 +130,6 @@ public class Parser {
     }
 
     private void error(String message) {
-        throw new RuntimeException(message);
+        throw new Diagnostics(message);
     }
 }

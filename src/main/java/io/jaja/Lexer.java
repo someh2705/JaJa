@@ -33,7 +33,7 @@ public class Lexer {
             }
         }
 
-        throw new IllegalStateException("Unknown token: " + string);
+        throw new Diagnostics("Unknown token: " + string);
     }
 
     public Token current() {

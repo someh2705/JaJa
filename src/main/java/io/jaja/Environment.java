@@ -9,7 +9,7 @@ public class Environment {
 
     public void declare(Token identifier, int evaluate) {
         if (environment.containsKey(identifier.field)) {
-            throw new IllegalStateException("Duplicate declaration of " + identifier.field);
+            throw new Diagnostics("Duplicate declaration of " + identifier.field);
         }
 
         environment.put(identifier.field, evaluate);
@@ -17,7 +17,7 @@ public class Environment {
 
     public void assignment(Token identifier, int evaluate) {
         if (!environment.containsKey(identifier.field)) {
-            throw new IllegalStateException("Unknown field " + identifier.field);
+            throw new Diagnostics("Unknown field " + identifier.field);
         }
 
         environment.put(identifier.field, evaluate);
@@ -25,7 +25,7 @@ public class Environment {
 
     public int call(Token identifier) {
         if (!environment.containsKey(identifier.field)) {
-            throw new IllegalStateException("Unknown field" + identifier.field);
+            throw new Diagnostics("Unknown field" + identifier.field);
         }
 
         return environment.get(identifier.field);

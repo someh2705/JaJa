@@ -2,17 +2,69 @@ package io.jaja.token;
 
 import io.jaja.utils.PatternUtils;
 
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 public enum TokenKind {
     EOF,
-    PLUS("+"),
-    STAR("*"),
     LPAREN("("),
     RPAREN(")"),
-    EQ("="),
+    LBRACE("{"),
+    RBRACE("}"),
+    LBRACKET("["),
+    RBRACKET("]"),
     SEMICOLON(";"),
+    COMMA(","),
+    DOT("."),
+    EQ("="),
+    GT(">"),
+    LT("<"),
+    BANG("!"),
+    TILDE("~"),
+    QUES("?"),
+    COLON(":"),
+    EQEQ("=="),
+    LTEQ("<="),
+    GTEQ(">="),
+    BANGEQ("!="),
+    AMPAMP("&&"),
+    BARBAR("||"),
+    PLUSPLUS("++"),
+    SUBSUB("--"),
+    PLUS("+"),
+    SUB("-"),
+    STAR("*"),
+    SLASH("/"),
+    AMP("&"),
+    BAR("|"),
+    CARET("^"),
+    PERCENT("%"),
+
+    VOID("void", TokenRule.SEPARATE),
     INT("int", TokenRule.SEPARATE),
+    FLOAT("float", TokenRule.SEPARATE),
+    DOUBLE("double", TokenRule.SEPARATE),
+    BOOLEAN("return", TokenRule.SEPARATE),
+    STRING("String", TokenRule.SEPARATE),
+
+    NEW("new", TokenRule.SEPARATE),
+
+    PUBLIC("public", TokenRule.SEPARATE),
+    PRIVATE("private", TokenRule.SEPARATE),
+    CLASS("class", TokenRule.SEPARATE),
+    STATIC("static", TokenRule.SEPARATE),
+    IMPORT("import", TokenRule.SEPARATE),
+    THIS("this", TokenRule.SEPARATE),
+
+    FOR("for", TokenRule.SEPARATE),
+    WHILE("while", TokenRule.SEPARATE),
+    CONTINUE("continue", TokenRule.SEPARATE),
+    IF("if", TokenRule.SEPARATE),
+    ELSE("else", TokenRule.SEPARATE),
+    SWITCH("switch", TokenRule.SEPARATE),
+    CASE("case", TokenRule.SEPARATE),
+    BREAK("break", TokenRule.SEPARATE),
+    RETURN("return", TokenRule.SEPARATE),
 
     WHITESPACE(TokenTag.WHITESPACE, TokenRule.DEFAULT),
     INTLITERAL(TokenTag.DECIMAL_NUMERAL),
@@ -23,7 +75,19 @@ public enum TokenKind {
     private final TokenTag tag;
     private final TokenRule rule;
 
-    private final static Pattern edge = Pattern.compile("[+*=;()]");
+    private final static List<Character> edge = available();
+
+    private static List<Character> available() {
+        List<Character> characters = new ArrayList<>();
+
+        for (TokenKind kind : values()) {
+            if (kind.name != null && kind.rule == TokenRule.DEFAULT) {
+                characters.add(kind.name.charAt(0));
+            }
+        }
+
+        return characters;
+    }
 
     TokenKind() {
         this(null, null, TokenRule.DEFAULT);
@@ -57,7 +121,7 @@ public enum TokenKind {
         if (result != null && this != WHITESPACE && rule == TokenRule.SEPARATE) {
             String next = string.substring(result.length());
             if (next.isEmpty()) return result; // "int" 인 경우 예외 처리
-            if (PatternUtils.startsWith(next, edge)) return result; // 10; 10*20 number= 예외 처리
+            if (isEdge(next)) return result; // 10; 10*20 number= 예외 처리
 
             boolean isWhitespace = PatternUtils.startsWith(next, TokenTag.WHITESPACE.getPattern());
             if (!isWhitespace) return null;
@@ -77,5 +141,15 @@ public enum TokenKind {
         }
 
         return null;
+    }
+
+    private boolean isEdge(String string) {
+        for (Character character : edge) {
+            if (string.startsWith(character.toString())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

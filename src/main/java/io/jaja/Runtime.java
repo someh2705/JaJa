@@ -73,7 +73,7 @@ public class Runtime {
 
     private String evaluateAssignmentExpression(AssignmentExpression expression) {
         int evaluate = Integer.parseInt(evaluate(expression.getExpression()));
-        environment.assignemnt(expression.getIdentifier(), evaluate);
+        environment.assignment(expression.getIdentifier(), evaluate);
         return String.valueOf(evaluate);
     }
 }

@@ -15,7 +15,7 @@ public class Environment {
         environment.put(identifier.field, evaluate);
     }
 
-    public void assignemnt(Token identifier, int evaluate) {
+    public void assignment(Token identifier, int evaluate) {
         if (!environment.containsKey(identifier.field)) {
             throw new IllegalStateException("Unknown field " + identifier.field);
         }

@@ -1,74 +1,79 @@
 package io.jaja.token;
 
-import java.util.regex.Matcher;
+import io.jaja.utils.PatternUtils;
+
 import java.util.regex.Pattern;
 
 public enum TokenKind {
     EOF,
-    WHITESPACE(TokenTag.BLANK),
     PLUS("+"),
     STAR("*"),
     LPAREN("("),
     RPAREN(")"),
     EQ("="),
     SEMICOLON(";"),
-    INT("int"),
-    IDENTIFIER(TokenTag.NAMED),
-    INTLITERAL(TokenTag.NUMERIC),
+    INT("int", TokenRule.SEPARATE),
+
+    WHITESPACE(TokenTag.WHITESPACE, TokenRule.DEFAULT),
+    INTLITERAL(TokenTag.DECIMAL_NUMERAL),
+    IDENTIFIER(TokenTag.JAVA_IDENTIFIER),
     ;
 
     private final String name;
     private final TokenTag tag;
-    private final Pattern pattern;
+    private final TokenRule rule;
+
+    private final static Pattern edge = Pattern.compile("[+*=;()]");
 
     TokenKind() {
-        this(null, TokenTag.DEFAULT);
+        this(null, null, TokenRule.DEFAULT);
     }
 
     TokenKind(String name) {
-        this(name, TokenTag.DEFAULT);
+        this(name, null, TokenRule.DEFAULT);
+    }
+
+    TokenKind(String name, TokenRule rule) {
+        this(name, null, rule);
     }
 
     TokenKind(TokenTag tag) {
-        this(null, tag);
+        this(null, tag, TokenRule.SEPARATE);
     }
 
-    TokenKind(String name, TokenTag tag) {
+    TokenKind(TokenTag tag, TokenRule rule) {
+        this(null, tag, rule);
+    }
+
+    TokenKind(String name, TokenTag tag, TokenRule rule) {
         this.name = name;
         this.tag = tag;
-
-        if (name != null) {
-            if (name.length() == 1) {
-                pattern = Pattern.compile("^[" + name + "]");
-            } else {
-                pattern = Pattern.compile("^" + name);
-            }
-        } else {
-            switch (tag) {
-                case DEFAULT:
-                    pattern = null;
-                    break;
-                case BLANK:
-                    pattern = Pattern.compile("^\\s+");
-                    break;
-                case NUMERIC:
-                    pattern = Pattern.compile("\\b(?:0|-?[1-9][0-9]*)\\b");
-                    break;
-                case NAMED:
-                    pattern = Pattern.compile("^[a-zA-Z_$][a-zA-Z_$0-9]*");
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid token tag: " + tag);
-            }
-        }
+        this.rule = rule;
     }
 
     public String parse(String string) {
-        if (pattern == null) return null;
+        String result = parseImpl(string);
 
-        Matcher matcher = pattern.matcher(string);
-        if (matcher.find()) {
-            return matcher.group();
+        if (result != null && this != WHITESPACE && rule == TokenRule.SEPARATE) {
+            String next = string.substring(result.length());
+            if (next.isEmpty()) return result; // "int" 인 경우 예외 처리
+            if (PatternUtils.startsWith(next, edge)) return result; // 10; 10*20 number= 예외 처리
+
+            boolean isWhitespace = PatternUtils.startsWith(next, TokenTag.WHITESPACE.getPattern());
+            if (!isWhitespace) return null;
+        }
+
+        return result;
+    }
+
+    private String parseImpl(String string) {
+        if (name != null) {
+            boolean isMatch = string.startsWith(name);
+            return isMatch ? name : null;
+        }
+
+        if (tag != null) {
+            return PatternUtils.startMatch(string, tag.getPattern());
         }
 
         return null;

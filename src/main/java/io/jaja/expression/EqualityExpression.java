@@ -27,4 +27,16 @@ public class EqualityExpression implements Expression {
     public Iterator<Expression> iterator() {
         return IteratorUtils.values(left, new PrimaryExpression(operator), right);
     }
+
+    public Expression getLeft() {
+        return left;
+    }
+
+    public Token getOperator() {
+        return operator;
+    }
+
+    public Expression getRight() {
+        return right;
+    }
 }

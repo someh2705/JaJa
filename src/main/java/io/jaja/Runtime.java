@@ -4,6 +4,8 @@ import io.jaja.expression.*;
 import io.jaja.statement.DeclareVariableStatement;
 import io.jaja.token.TokenKind;
 
+import java.util.Objects;
+
 public class Runtime {
 
     private Environment environment = new Environment();
@@ -38,7 +40,18 @@ public class Runtime {
             return evaluateAssignmentExpression((AssignmentExpression) expression);
         }
 
+        if (expression instanceof EqualityExpression) {
+            return evaluateEqualityExpression((EqualityExpression) expression);
+        }
+
         throw new Diagnostics("Unexpected expression : " + expression);
+    }
+
+    private String evaluateEqualityExpression(EqualityExpression expression) {
+        String left = evaluate(expression.getLeft());
+        String right = evaluate(expression.getRight());
+
+        return Objects.equals(left, right) ? "true" : "false";
     }
 
     private String evaluateAdditiveExpression(AdditiveExpression expression) {

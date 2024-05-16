@@ -27,4 +27,15 @@ public class RuntimeTest {
         String modify = runtime.evaluate("number = 20");
         assertEquals("20", modify);
     }
+
+    @Test
+    void equalityExpressionTest() {
+        Runtime runtime = new Runtime();
+
+        String declare = runtime.evaluate("int number = 10;");
+        assertEquals("number(10)", declare);
+
+        String equality = runtime.evaluate("number == 10");
+        assertEquals("true", equality);
+    }
 }

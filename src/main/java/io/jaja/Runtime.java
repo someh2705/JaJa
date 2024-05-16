@@ -1,8 +1,12 @@
 package io.jaja;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.jaja.expression.*;
 import io.jaja.statement.DeclareVariableStatement;
+import io.jaja.statement.IfThenStatement;
 import io.jaja.token.TokenKind;
+
+import java.util.Objects;
 
 public class Runtime {
 
@@ -10,7 +14,7 @@ public class Runtime {
 
     public String evaluate(String input) {
         Parser parser = new Parser(input);
-        return evaluate(parser.parseExpression());
+        return evaluate(parser.parseStatement());
     }
 
     private String evaluate(Expression expression) {
@@ -38,7 +42,30 @@ public class Runtime {
             return evaluateAssignmentExpression((AssignmentExpression) expression);
         }
 
+        if (expression instanceof EqualityExpression) {
+            return evaluateEqualityExpression((EqualityExpression) expression);
+        }
+
+        if (expression instanceof IfThenStatement) {
+            return evaluateIfThenStatement((IfThenStatement) expression);
+        }
+
         throw new Diagnostics("Unexpected expression : " + expression);
+    }
+
+    private String evaluateIfThenStatement(IfThenStatement expression) {
+        if (Boolean.parseBoolean(evaluate(expression.getCondition()))) {
+            return evaluate(expression.getStatement());
+        }
+
+        return "";
+    }
+
+    private String evaluateEqualityExpression(EqualityExpression expression) {
+        String left = evaluate(expression.getLeft());
+        String right = evaluate(expression.getRight());
+
+        return Objects.equals(left, right) ? "true" : "false";
     }
 
     private String evaluateAdditiveExpression(AdditiveExpression expression) {

@@ -2,6 +2,7 @@ package io.jaja;
 
 import io.jaja.expression.*;
 import io.jaja.statement.DeclareVariableStatement;
+import io.jaja.statement.IfThenStatement;
 import io.jaja.utils.Printer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -36,7 +37,7 @@ public class ParserTest {
         Parser parser = new Parser("10 + (20 + 30) * 40");
 
         assertTreeOf(
-            parser.parseExpression(),
+            parser.parseStatement(),
             AdditiveExpression.class,
                 PrimaryExpression.class,
                 PrimaryExpression.class,
@@ -56,7 +57,7 @@ public class ParserTest {
         Parser parser = new Parser("number = 20");
 
         assertTreeOf(
-            parser.parseExpression(),
+            parser.parseStatement(),
             AssignmentExpression.class,
                 PrimaryExpression.class,
                 PrimaryExpression.class,
@@ -65,14 +66,43 @@ public class ParserTest {
     }
 
     @Test
+    void equalityExpressionTest() {
+        Parser parser = new Parser("number == 20");
+        Expression expression = parser.parseStatement();
+
+        assertTreeOf(
+            expression,
+            EqualityExpression.class,
+                Expression.class,
+                PrimaryExpression.class,
+                Expression.class
+        );
+    }
+
+    @Test
     void declareVariableStatementTest() {
         Parser parser = new Parser("int number = 10;");
 
         assertTreeOf(
-            parser.parseExpression(),
+            parser.parseStatement(),
             DeclareVariableStatement.class,
                 PrimaryExpression.class,
                 PrimaryExpression.class
+        );
+    }
+
+    @Test
+    void ifThenStatementTest() {
+        Parser parser = new Parser("if (number == 10) int statement = 20;");
+
+        assertTreeOf(
+            parser.parseStatement(),
+            IfThenStatement.class,
+                EqualityExpression.class,
+                    PrimaryExpression.class,
+                    PrimaryExpression.class,
+                    PrimaryExpression.class,
+                DeclareVariableStatement.class
         );
     }
 

@@ -2,6 +2,8 @@ package io.jaja;
 
 import io.jaja.expression.*;
 import io.jaja.statement.DeclareVariableStatement;
+import io.jaja.statement.IfThenStatement;
+import io.jaja.statement.Statement;
 import io.jaja.token.Token;
 import io.jaja.token.TokenKind;
 
@@ -16,6 +18,21 @@ public class Parser {
         this.tokens = lexer.every();
     }
 
+    public Expression parseStatement() {
+        if (match(TokenKind.IF)) return parseIfThenStatement();
+
+        return parseExpression();
+    }
+
+    public Expression parseIfThenStatement() {
+        needs(TokenKind.LPAREN);
+        Expression expression = parseExpression();
+        needs(TokenKind.RPAREN);
+        Expression statement = parseStatement();
+
+        return new IfThenStatement(expression, statement);
+    }
+
     public Expression parseExpression() {
         return declareVariableStatement();
     }
@@ -23,9 +40,9 @@ public class Parser {
     private Expression declareVariableStatement() {
         if (match(TokenKind.INT)) {
             Token identifier = consume();
-            needs(TokenKind.EQ, "=가 필요합니다.");
-            Expression expression = parseExpression();
-            needs(TokenKind.SEMICOLON, ";가 필요합니다.");
+            needs(TokenKind.EQ);
+            Expression expression = parseStatement();
+            needs(TokenKind.SEMICOLON);
             return new DeclareVariableStatement(identifier, expression);
         }
 
@@ -45,7 +62,18 @@ public class Parser {
             }
         }
 
-        return parseAdditiveExpression();
+        return parseEqualityExpression();
+    }
+
+    private Expression parseEqualityExpression() {
+        Expression left = parseAdditiveExpression();
+        while (match(TokenKind.EQEQ)) {
+            Token operator = previous();
+            Expression right = parseAdditiveExpression();
+            left = new EqualityExpression(left, operator, right);
+        }
+
+        return left;
     }
 
     /**
@@ -83,8 +111,8 @@ public class Parser {
      */
     private Expression parsePrimaryExpression() {
         if (match(TokenKind.LPAREN)) {
-            Expression expression = parseExpression();
-            needs(TokenKind.RPAREN, ")가 필요합니다.");
+            Expression expression = parseStatement();
+            needs(TokenKind.RPAREN);
 
             return new ParenthesesExpression(expression);
         }
@@ -119,6 +147,10 @@ public class Parser {
         }
 
         return false;
+    }
+
+    private void needs(TokenKind kind) {
+        needs(kind, "Unexpected Token: expected " + kind + ", actual " + peek());
     }
 
     private void needs(TokenKind kind, String message) {

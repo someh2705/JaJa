@@ -3,7 +3,6 @@ package io.jaja;
 import io.jaja.expression.*;
 import io.jaja.statement.DeclareVariableStatement;
 import io.jaja.statement.IfThenStatement;
-import io.jaja.statement.Statement;
 import io.jaja.utils.Printer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -67,6 +66,20 @@ public class ParserTest {
     }
 
     @Test
+    void equalityExpressionTest() {
+        Parser parser = new Parser("number == 20");
+        Expression expression = parser.parseStatement();
+
+        assertTreeOf(
+            expression,
+            EqualityExpression.class,
+                Expression.class,
+                PrimaryExpression.class,
+                Expression.class
+        );
+    }
+
+    @Test
     void declareVariableStatementTest() {
         Parser parser = new Parser("int number = 10;");
 
@@ -80,13 +93,16 @@ public class ParserTest {
 
     @Test
     void ifThenStatementTest() {
-        Parser parser = new Parser("if (expression) int statement = 10;");
+        Parser parser = new Parser("if (number == 10) int statement = 20;");
 
         assertTreeOf(
             parser.parseStatement(),
             IfThenStatement.class,
-                PrimaryExpression.class,
-                Statement.class
+                EqualityExpression.class,
+                    PrimaryExpression.class,
+                    PrimaryExpression.class,
+                    PrimaryExpression.class,
+                DeclareVariableStatement.class
         );
     }
 

@@ -62,7 +62,18 @@ public class Parser {
             }
         }
 
-        return parseAdditiveExpression();
+        return parseEqualityExpression();
+    }
+
+    private Expression parseEqualityExpression() {
+        Expression left = parseAdditiveExpression();
+        while (match(TokenKind.EQEQ)) {
+            Token operator = previous();
+            Expression right = parseAdditiveExpression();
+            left = new EqualityExpression(left, operator, right);
+        }
+
+        return left;
     }
 
     /**

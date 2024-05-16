@@ -38,4 +38,17 @@ public class RuntimeTest {
         String equality = runtime.evaluate("number == 10");
         assertEquals("true", equality);
     }
+
+    @Test
+    void ifThenStatementTest() {
+        Runtime runtime = new Runtime();
+
+        String declare = runtime.evaluate("int number = 10;");
+        String result1 = runtime.evaluate("if (number == 10) number");
+        String result2 = runtime.evaluate("if (number == 20) number");
+
+        assertEquals("number(10)", declare);
+        assertEquals("10", result1);
+        assertEquals("", result2);
+    }
 }

@@ -1,7 +1,9 @@
 package io.jaja;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.jaja.expression.*;
 import io.jaja.statement.DeclareVariableStatement;
+import io.jaja.statement.IfThenStatement;
 import io.jaja.token.TokenKind;
 
 import java.util.Objects;
@@ -44,7 +46,19 @@ public class Runtime {
             return evaluateEqualityExpression((EqualityExpression) expression);
         }
 
+        if (expression instanceof IfThenStatement) {
+            return evaluateIfThenStatement((IfThenStatement) expression);
+        }
+
         throw new Diagnostics("Unexpected expression : " + expression);
+    }
+
+    private String evaluateIfThenStatement(IfThenStatement expression) {
+        if (Boolean.parseBoolean(evaluate(expression.getCondition()))) {
+            return evaluate(expression.getStatement());
+        }
+
+        return "";
     }
 
     private String evaluateEqualityExpression(EqualityExpression expression) {

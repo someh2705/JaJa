@@ -24,4 +24,12 @@ public class IfThenStatement implements Statement {
     public Iterator<Expression> iterator() {
         return IteratorUtils.values(condition, statement);
     }
+
+    public Expression getCondition() {
+        return condition;
+    }
+
+    public Expression getStatement() {
+        return statement;
+    }
 }

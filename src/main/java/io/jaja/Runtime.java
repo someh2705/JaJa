@@ -10,7 +10,7 @@ public class Runtime {
 
     public String evaluate(String input) {
         Parser parser = new Parser(input);
-        return evaluate(parser.parseExpression());
+        return evaluate(parser.parseStatement());
     }
 
     private String evaluate(Expression expression) {

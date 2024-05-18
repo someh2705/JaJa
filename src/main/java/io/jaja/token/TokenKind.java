@@ -70,11 +70,12 @@ public enum TokenKind {
     RETURN("return", TokenRule.SEPARATE),
 
     WHITESPACE(TokenTag.WHITESPACE, TokenRule.DEFAULT),
+    IDENTIFIER(TokenTag.JAVA_IDENTIFIER),
     FLOATLITERAL(TokenTag.FLOAT_NUMERAL),
+    DOUBLELITERAL(TokenTag.DOUBLE_NUMERAL),
     INTLITERAL(TokenTag.DECIMAL_NUMERAL),
     STRINGLITERAL(TokenTag.STRING),
-    IDENTIFIER(TokenTag.JAVA_IDENTIFIER),
-    DOT(TokenTag.DOT),
+    DOT("."),
     ;
 
     private final String name;

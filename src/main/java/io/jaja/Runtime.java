@@ -1,9 +1,9 @@
 package io.jaja;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.jaja.expression.*;
-import io.jaja.statement.DeclareVariableStatement;
+import io.jaja.statement.LocalVariableDeclarationStatement;
 import io.jaja.statement.IfThenStatement;
+import io.jaja.statement.Statement;
 import io.jaja.token.TokenKind;
 
 import java.util.Objects;
@@ -14,7 +14,20 @@ public class Runtime {
 
     public String evaluate(String input) {
         Parser parser = new Parser(input);
-        return evaluate(parser.parseStatement());
+        return evaluate(parser.parse());
+    }
+
+    private String evaluate(Program program) {
+        AST ast = program.getAST();
+        return evaluate(ast);
+    }
+
+    private String evaluate(AST ast) {
+        if (ast instanceof Statement) {
+            return evaluate((Statement) ast);
+        }
+
+        return evaluate((Expression) ast);
     }
 
     private String evaluate(Expression expression) {
@@ -34,10 +47,6 @@ public class Runtime {
             return evaluatePrimaryExpression((PrimaryExpression) expression);
         }
 
-        if (expression instanceof DeclareVariableStatement) {
-            return evaluateDeclareVariableStatement((DeclareVariableStatement) expression);
-        }
-
         if (expression instanceof AssignmentExpression) {
             return evaluateAssignmentExpression((AssignmentExpression) expression);
         }
@@ -46,16 +55,24 @@ public class Runtime {
             return evaluateEqualityExpression((EqualityExpression) expression);
         }
 
-        if (expression instanceof IfThenStatement) {
-            return evaluateIfThenStatement((IfThenStatement) expression);
+        throw new Diagnostics("Unexpected expression : " + expression);
+    }
+
+    private String evaluate(Statement statement) {
+        if (statement instanceof LocalVariableDeclarationStatement) {
+            return evaluateDeclareVariableStatement((LocalVariableDeclarationStatement) statement);
         }
 
-        throw new Diagnostics("Unexpected expression : " + expression);
+        if (statement instanceof IfThenStatement) {
+            return evaluateIfThenStatement((IfThenStatement) statement);
+        }
+
+        throw new Diagnostics("Unexpected statement : " + statement);
     }
 
     private String evaluateIfThenStatement(IfThenStatement expression) {
         if (Boolean.parseBoolean(evaluate(expression.getCondition()))) {
-            return evaluate(expression.getStatement());
+            return evaluate(expression.getAst());
         }
 
         return "";
@@ -92,7 +109,7 @@ public class Runtime {
         return evaluate(expression.getExpression());
     }
 
-    private String evaluateDeclareVariableStatement(DeclareVariableStatement expression) {
+    private String evaluateDeclareVariableStatement(LocalVariableDeclarationStatement expression) {
         int evaluate = Integer.parseInt(evaluate(expression.getExpression()));
         environment.declare(expression.getIdentifier(), evaluate);
         return expression.getIdentifier().field + "(" + evaluate + ")";

@@ -1,5 +1,6 @@
 package io.jaja.expression;
 
+import io.jaja.AST;
 import io.jaja.utils.IteratorUtils;
 
 import java.util.Iterator;
@@ -27,12 +28,12 @@ public class ParenthesesExpression implements Expression {
     }
 
     @Override
-    public Expression lastChild() {
+    public AST lastChild() {
         return expression;
     }
 
     @Override
-    public Iterator<Expression> iterator() {
+    public Iterator<AST> iterator() {
         return IteratorUtils.values(expression);
     }
 

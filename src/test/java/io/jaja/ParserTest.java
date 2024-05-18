@@ -1,8 +1,9 @@
 package io.jaja;
 
 import io.jaja.expression.*;
-import io.jaja.statement.DeclareVariableStatement;
 import io.jaja.statement.IfThenStatement;
+import io.jaja.statement.LocalVariableDeclarationStatement;
+import io.jaja.token.Token;
 import io.jaja.utils.Printer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -37,18 +38,18 @@ public class ParserTest {
         Parser parser = new Parser("10 + (20 + 30) * 40");
 
         assertTreeOf(
-            parser.parseStatement(),
+            parser.parse(),
             AdditiveExpression.class,
-                PrimaryExpression.class,
-                PrimaryExpression.class,
+                Token.class,
+                Token.class,
                 MultiplicativeExpression.class,
                     ParenthesesExpression.class,
                         AdditiveExpression.class,
-                            PrimaryExpression.class,
-                            PrimaryExpression.class,
-                            PrimaryExpression.class,
-                    PrimaryExpression.class,
-                    PrimaryExpression.class
+                            Token.class,
+                            Token.class,
+                            Token.class,
+                    Token.class,
+                    Token.class
         );
     }
 
@@ -57,25 +58,25 @@ public class ParserTest {
         Parser parser = new Parser("number = 20");
 
         assertTreeOf(
-            parser.parseStatement(),
+            parser.parse(),
             AssignmentExpression.class,
-                PrimaryExpression.class,
-                PrimaryExpression.class,
-                PrimaryExpression.class
+                Token.class,
+                Token.class,
+                Token.class
         );
     }
 
     @Test
     void equalityExpressionTest() {
         Parser parser = new Parser("number == 20");
-        Expression expression = parser.parseStatement();
+        Program program = parser.parse();
 
         assertTreeOf(
-            expression,
+            program,
             EqualityExpression.class,
-                Expression.class,
                 PrimaryExpression.class,
-                Expression.class
+                Token.class,
+                Token.class
         );
     }
 
@@ -84,10 +85,10 @@ public class ParserTest {
         Parser parser = new Parser("int number = 10;");
 
         assertTreeOf(
-            parser.parseStatement(),
-            DeclareVariableStatement.class,
-                PrimaryExpression.class,
-                PrimaryExpression.class
+            parser.parse(),
+            LocalVariableDeclarationStatement.class,
+                Token.class,
+                Token.class
         );
     }
 
@@ -96,28 +97,28 @@ public class ParserTest {
         Parser parser = new Parser("if (number == 10) int statement = 20;");
 
         assertTreeOf(
-            parser.parseStatement(),
+            parser.parse(),
             IfThenStatement.class,
                 EqualityExpression.class,
                     PrimaryExpression.class,
+                    Token.class,
                     PrimaryExpression.class,
-                    PrimaryExpression.class,
-                DeclareVariableStatement.class
+                LocalVariableDeclarationStatement.class
         );
     }
 
-    private void assertTreeOf(Expression expression, Class<? extends Expression>... expected) {
+    private void assertTreeOf(Program program, Class<? extends AST>... expected) {
         List<String> names = new ArrayList<>();
 
-        for (Class<? extends Expression> clazz : expected) {
+        for (Class<? extends AST> clazz : expected) {
             names.add(clazz.getSimpleName());
         }
 
-        assertTreeOf(expression, names);
+        assertTreeOf(program.getAST(), names);
     }
 
-    private void assertTreeOf(Expression expression, List<String> expected) {
-        Printer.pretty(expression);
+    private void assertTreeOf(AST ast, List<String> expected) {
+        Printer.pretty(ast);
         StringReader sr = new StringReader(out.toString());
 
         try (BufferedReader br = new BufferedReader(sr)) {
@@ -128,6 +129,6 @@ public class ParserTest {
     }
 
     private void assertContains(String expected, String actual) {
-        Assertions.assertTrue(expected.contains(actual));
+        Assertions.assertTrue(expected.contains(actual), "expected: <" + expected + "> but was: <" + actual + ">");
     }
 }

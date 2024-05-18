@@ -1,8 +1,12 @@
 package io.jaja.token;
 
+import io.jaja.AST;
+import io.jaja.utils.IteratorUtils;
+
+import java.util.Iterator;
 import java.util.Objects;
 
-public class Token {
+public class Token implements AST {
     public final TokenKind kind;
     public final String field;
 
@@ -32,5 +36,15 @@ public class Token {
             "kind=" + kind +
             ", field='" + name + '\'' +
             '}';
+    }
+
+    @Override
+    public AST lastChild() {
+        return this;
+    }
+
+    @Override
+    public Iterator<AST> iterator() {
+        return IteratorUtils.values();
     }
 }

@@ -1,11 +1,11 @@
 package io.jaja.utils;
 
-import io.jaja.expression.Expression;
+import io.jaja.AST;
 
 public class Printer {
 
-    public static void pretty(Expression expression) {
-        pretty(expression, "", true);
+    public static void pretty(AST ast) {
+        pretty(ast, "", true);
     }
 
     /**
@@ -13,7 +13,7 @@ public class Printer {
      * ├───
      * │
      */
-    private static void pretty(Expression node, String indent, boolean isLast) {
+    private static void pretty(AST node, String indent, boolean isLast) {
         String marker = isLast ? "└──" : "├──";
 
         System.out.print(indent);
@@ -23,7 +23,7 @@ public class Printer {
         System.out.println();
 
         indent += isLast ? "   " : "│  ";
-        for (Expression child : node) {
+        for (AST child : node) {
             pretty(child, indent, child == node.lastChild());
         }
     }

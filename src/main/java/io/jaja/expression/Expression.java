@@ -1,6 +1,7 @@
 package io.jaja.expression;
 
-public interface Expression extends Iterable<Expression> {
+import io.jaja.AST;
 
-    public Expression lastChild();
+public interface Expression extends AST {
+
 }

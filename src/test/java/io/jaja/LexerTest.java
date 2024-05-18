@@ -36,7 +36,6 @@ public class LexerTest {
             for (int j = 0; j < 2; j++) {
                 for (int k = 0; k < 2; k++) {
                     for (int l = 0; l < 2; l++) {
-                        System.out.println("10" + w[i] + "+" + w[j] + "20" + w[k] + "*" + w[l] + "30");
                         assertKind(
                             "10" + w[i] + "+" + w[j] + "20" + w[k] + "*" + w[l] + "30",
                             TokenKind.INTLITERAL, TokenKind.PLUS, TokenKind.INTLITERAL, TokenKind.STAR, TokenKind.INTLITERAL

@@ -24,7 +24,7 @@ public class RuntimeTest {
         String ask = runtime.evaluate("number");
         assertEquals("10", ask);
 
-        String modify = runtime.evaluate("number = 20");
+        String modify = runtime.evaluate("number = 20;");
         assertEquals("20", modify);
     }
 
@@ -50,5 +50,17 @@ public class RuntimeTest {
         assertEquals("number(10)", declare);
         assertEquals("10", result1);
         assertEquals("", result2);
+
+        String multipleLine = new StringBuilder()
+            .append("if (number == 10) {")
+            .append("    number = 20;")
+            .append("}")
+            .toString();
+
+        String result3 = runtime.evaluate(multipleLine);
+        String result4 = runtime.evaluate("number");
+
+        assertEquals("", result3);
+        assertEquals("20", result4);
     }
 }

@@ -55,7 +55,7 @@ public class ParserTest {
 
     @Test
     void assignmentExpressionTest() {
-        Parser parser = new Parser("number = 20");
+        Parser parser = new Parser("number = 20;");
 
         assertTreeOf(
             parser.parse(),

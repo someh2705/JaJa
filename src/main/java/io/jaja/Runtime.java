@@ -1,11 +1,13 @@
 package io.jaja;
 
 import io.jaja.expression.*;
+import io.jaja.statement.BlockStatement;
 import io.jaja.statement.LocalVariableDeclarationStatement;
 import io.jaja.statement.IfThenStatement;
 import io.jaja.statement.Statement;
 import io.jaja.token.TokenKind;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Runtime {
@@ -67,12 +69,25 @@ public class Runtime {
             return evaluateIfThenStatement((IfThenStatement) statement);
         }
 
+        if (statement instanceof BlockStatement) {
+            return evaluateBlockStatement((BlockStatement) statement);
+        }
+
         throw new Diagnostics("Unexpected statement : " + statement);
     }
 
     private String evaluateIfThenStatement(IfThenStatement expression) {
         if (Boolean.parseBoolean(evaluate(expression.getCondition()))) {
             return evaluate(expression.getAst());
+        }
+
+        return "";
+    }
+
+    private String evaluateBlockStatement(BlockStatement statement) {
+        ArrayList<AST> asts = statement.getAsts();
+        for (AST ast: asts) {
+            evaluate(ast);
         }
 
         return "";

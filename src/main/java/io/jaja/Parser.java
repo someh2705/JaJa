@@ -1,12 +1,14 @@
 package io.jaja;
 
 import io.jaja.expression.*;
+import io.jaja.statement.BlockStatement;
 import io.jaja.statement.LocalVariableDeclarationStatement;
 import io.jaja.statement.IfThenStatement;
 import io.jaja.statement.Statement;
 import io.jaja.token.Token;
 import io.jaja.token.TokenKind;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +25,11 @@ public class Parser {
         return new Program(parseImpl(0));
     }
 
-    public AST parseImpl(int current) {
+    private AST parseImpl() {
+        return parseImpl(position);
+    }
+
+    private AST parseImpl(int current) {
         try {
             Statement statement = parseStatement();
             return statement;
@@ -34,13 +40,24 @@ public class Parser {
         }
     }
 
-    public Statement parseStatement() {
+    private Statement parseStatement() {
+        if (match(TokenKind.LBRACE)) return parseBlockStatement();
         if (match(TokenKind.IF)) return parseIfThenStatement();
 
         return parseLocalVariableDeclarationStatement();
     }
 
-    public Statement parseIfThenStatement() {
+    private Statement parseBlockStatement() {
+        ArrayList<AST> asts = new ArrayList<>();
+
+        do {
+            asts.add(parseImpl(position));
+        } while (!match(TokenKind.RBRACE));
+
+        return new BlockStatement(asts);
+    }
+
+    private Statement parseIfThenStatement() {
         needs(TokenKind.LPAREN);
         Expression expression = parseExpression();
         needs(TokenKind.RPAREN);
@@ -49,7 +66,7 @@ public class Parser {
         return new IfThenStatement(expression, ast);
     }
 
-    public Expression parseExpression() {
+    private Expression parseExpression() {
         return assignemntExpression();
     }
 
@@ -106,6 +123,7 @@ public class Parser {
                 Token identifier = consume();
                 Token operator = consume();
                 Expression right = assignemntExpression();
+                needs(TokenKind.SEMICOLON);
                 return new AssignmentExpression(identifier, operator, right);
             }
         }

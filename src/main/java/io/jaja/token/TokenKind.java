@@ -16,7 +16,6 @@ public enum TokenKind {
     RBRACKET("]"),
     SEMICOLON(";"),
     COMMA(","),
-    DOT("."),
     BANG("!"),
     QUES("?"),
     COLON(":"),
@@ -46,6 +45,9 @@ public enum TokenKind {
     DOUBLE("double", TokenRule.SEPARATE),
     BOOLEAN("boolean", TokenRule.SEPARATE),
     STRING("String", TokenRule.SEPARATE),
+    NULL("null", TokenRule.SEPARATE),
+    TRUE("true", TokenRule.SEPARATE),
+    FALSE("false", TokenRule.SEPARATE),
 
     NEW("new", TokenRule.SEPARATE),
     FINAL("final", TokenRule.SEPARATE),
@@ -68,8 +70,11 @@ public enum TokenKind {
     RETURN("return", TokenRule.SEPARATE),
 
     WHITESPACE(TokenTag.WHITESPACE, TokenRule.DEFAULT),
+    FLOATLITERAL(TokenTag.FLOAT_NUMERAL),
     INTLITERAL(TokenTag.DECIMAL_NUMERAL),
+    STRINGLITERAL(TokenTag.STRING),
     IDENTIFIER(TokenTag.JAVA_IDENTIFIER),
+    DOT(TokenTag.DOT),
     ;
 
     private final String name;

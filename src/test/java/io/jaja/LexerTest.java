@@ -1,5 +1,6 @@
 package io.jaja;
 
+import io.jaja.token.Token;
 import io.jaja.token.TokenKind;
 import org.junit.jupiter.api.Test;
 
@@ -9,9 +10,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class LexerTest {
     @Test
     void literalTest() {
-
         assertKind("0", TokenKind.INTLITERAL);
         assertBadToken("0123");
+
+        assertKind("true false", TokenKind.TRUE, TokenKind.FALSE);
+
+        assertKind("0f", TokenKind.FLOATLITERAL);
+        assertKind("0.f", TokenKind.FLOATLITERAL);
+        assertKind("0.0f", TokenKind.FLOATLITERAL);
+        assertKind(".0f", TokenKind.FLOATLITERAL);
+
+        assertKind("\"Hello World\" Hello", TokenKind.STRINGLITERAL, TokenKind.IDENTIFIER);
     }
 
     @Test
@@ -71,6 +80,8 @@ public class LexerTest {
     }
 
     private void assertBadToken(String string) {
-        assertThrows(Diagnostics.class, () -> new Lexer(string).current());
+        assertThrows(Diagnostics.class, () -> {
+            Token kind = new Lexer(string).current();
+        });
     }
 }

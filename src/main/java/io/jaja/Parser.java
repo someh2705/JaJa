@@ -1,10 +1,7 @@
 package io.jaja;
 
 import io.jaja.expression.*;
-import io.jaja.statement.BlockStatement;
-import io.jaja.statement.LocalVariableDeclarationStatement;
-import io.jaja.statement.IfThenStatement;
-import io.jaja.statement.Statement;
+import io.jaja.statement.*;
 import io.jaja.token.Token;
 import io.jaja.token.TokenKind;
 
@@ -22,7 +19,7 @@ public class Parser {
     }
 
     public Program parse() {
-        return new Program(parseImpl(0));
+        return new Program(parseImpl());
     }
 
     private AST parseImpl() {
@@ -43,6 +40,7 @@ public class Parser {
     private Statement parseStatement() {
         if (match(TokenKind.LBRACE)) return parseBlockStatement();
         if (match(TokenKind.IF)) return parseIfThenStatement();
+        if (match(TokenKind.WHILE)) return parseWhileStatement();
 
         return parseLocalVariableDeclarationStatement();
     }
@@ -51,7 +49,7 @@ public class Parser {
         ArrayList<AST> asts = new ArrayList<>();
 
         do {
-            asts.add(parseImpl(position));
+            asts.add(parseImpl());
         } while (!match(TokenKind.RBRACE));
 
         return new BlockStatement(asts);
@@ -61,9 +59,17 @@ public class Parser {
         needs(TokenKind.LPAREN);
         Expression expression = parseExpression();
         needs(TokenKind.RPAREN);
-        AST ast = parseImpl(position);
+        AST ast = parseImpl();
 
         return new IfThenStatement(expression, ast);
+    }
+
+    private Statement parseWhileStatement() {
+        needs(TokenKind.LPAREN);
+        Expression expression = parseExpression();
+        needs(TokenKind.RPAREN);
+        AST ast = parseImpl();
+        return new WhileStatement(expression, ast);
     }
 
     private Expression parseExpression() {
@@ -81,6 +87,7 @@ public class Parser {
         Token identifier = previous();
         needs(TokenKind.EQ);
         Expression expression = parseExpression();
+        needs(TokenKind.SEMICOLON);
         return new LocalVariableDeclarationStatement(type, identifier, expression);
     }
 

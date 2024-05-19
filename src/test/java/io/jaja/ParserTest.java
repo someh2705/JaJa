@@ -1,8 +1,10 @@
 package io.jaja;
 
 import io.jaja.expression.*;
+import io.jaja.statement.BlockStatement;
 import io.jaja.statement.IfThenStatement;
 import io.jaja.statement.LocalVariableDeclarationStatement;
+import io.jaja.statement.WhileStatement;
 import io.jaja.token.Token;
 import io.jaja.utils.Printer;
 import org.junit.jupiter.api.AfterEach;
@@ -104,6 +106,31 @@ public class ParserTest {
                     Token.class,
                     PrimaryExpression.class,
                 LocalVariableDeclarationStatement.class
+        );
+    }
+
+    @Test
+    void whileStatementTest() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("while (number == 10) {");
+        builder.append("    int statement = 20;");
+        builder.append("}");
+
+        Parser parser = new Parser(builder.toString());
+        Program program = parser.parse();
+
+        assertTreeOf(
+            program,
+            WhileStatement.class,
+                EqualityExpression.class,
+                    PrimaryExpression.class,
+                    Token.class,
+                    Token.class,
+                BlockStatement.class,
+                    LocalVariableDeclarationStatement.class,
+                        Token.class,
+                        Token.class,
+                        PrimaryExpression.class
         );
     }
 

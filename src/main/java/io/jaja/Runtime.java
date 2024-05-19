@@ -1,10 +1,7 @@
 package io.jaja;
 
 import io.jaja.expression.*;
-import io.jaja.statement.BlockStatement;
-import io.jaja.statement.LocalVariableDeclarationStatement;
-import io.jaja.statement.IfThenStatement;
-import io.jaja.statement.Statement;
+import io.jaja.statement.*;
 import io.jaja.token.TokenKind;
 
 import java.util.ArrayList;
@@ -69,6 +66,10 @@ public class Runtime {
             return evaluateIfThenStatement((IfThenStatement) statement);
         }
 
+        if (statement instanceof WhileStatement) {
+            return evaluateWhileStatement((WhileStatement) statement);
+        }
+
         if (statement instanceof BlockStatement) {
             return evaluateBlockStatement((BlockStatement) statement);
         }
@@ -79,6 +80,14 @@ public class Runtime {
     private String evaluateIfThenStatement(IfThenStatement expression) {
         if (Boolean.parseBoolean(evaluate(expression.getCondition()))) {
             return evaluate(expression.getAst());
+        }
+
+        return "";
+    }
+
+    private String evaluateWhileStatement(WhileStatement statement) {
+        while (Boolean.parseBoolean(evaluate(statement.getCondition()))) {
+            evaluate(statement.getBody());
         }
 
         return "";

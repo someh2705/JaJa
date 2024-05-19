@@ -134,6 +134,19 @@ public class ParserTest {
         );
     }
 
+    @Test
+    void methodInvocationTest() {
+        Parser parser = new Parser("println(\"Hello World\")");
+        Program program = parser.parse();
+
+        assertTreeOf(
+            program,
+            MethodInvocationExpression.class,
+                Token.class,
+                PrimaryExpression.class
+        );
+    }
+
     private void assertTreeOf(Program program, Class<? extends AST>... expected) {
         List<String> names = new ArrayList<>();
 

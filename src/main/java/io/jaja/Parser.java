@@ -219,7 +219,19 @@ public class Parser {
             return new ParenthesesExpression(expression);
         }
 
-        return new PrimaryExpression(consume());
+        Token token = consume();
+
+        if (match(TokenKind.LPAREN)) {
+            ArrayList<Expression> arguments = new ArrayList<>();
+
+            do {
+                arguments.add(parseExpression());
+            } while (!match(TokenKind.RPAREN));
+
+            return new MethodInvocationExpression(token, arguments);
+        }
+
+        return new PrimaryExpression(token);
     }
 
     private Token peek() {

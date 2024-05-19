@@ -1,5 +1,6 @@
 package io.jaja.expression;
 
+import io.jaja.AST;
 import io.jaja.token.Token;
 import io.jaja.utils.IteratorUtils;
 
@@ -31,13 +32,13 @@ public class AssignmentExpression implements Expression {
     }
 
     @Override
-    public Expression lastChild() {
+    public AST lastChild() {
         return expression;
     }
 
     @Override
-    public Iterator<Expression> iterator() {
-        return IteratorUtils.values(new PrimaryExpression(identifier), new PrimaryExpression(operator), expression);
+    public Iterator<AST> iterator() {
+        return IteratorUtils.values(identifier, operator, expression);
     }
 
     @Override

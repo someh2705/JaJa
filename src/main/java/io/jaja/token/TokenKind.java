@@ -40,7 +40,11 @@ public enum TokenKind {
     PERCENT("%"),
 
     VOID("void", TokenRule.SEPARATE),
+    BYTE("byte", TokenRule.SEPARATE),
+    SHORT("short", TokenRule.SEPARATE),
     INT("int", TokenRule.SEPARATE),
+    LONG("long", TokenRule.SEPARATE),
+    CHAR("char", TokenRule.SEPARATE),
     FLOAT("float", TokenRule.SEPARATE),
     DOUBLE("double", TokenRule.SEPARATE),
     BOOLEAN("boolean", TokenRule.SEPARATE),

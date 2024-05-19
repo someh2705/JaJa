@@ -1,5 +1,6 @@
 package io.jaja.expression;
 
+import io.jaja.AST;
 import io.jaja.token.Token;
 import io.jaja.utils.IteratorUtils;
 
@@ -24,8 +25,8 @@ public class EqualityExpression implements Expression {
     }
 
     @Override
-    public Iterator<Expression> iterator() {
-        return IteratorUtils.values(left, new PrimaryExpression(operator), right);
+    public Iterator<AST> iterator() {
+        return IteratorUtils.values(left, operator, right);
     }
 
     public Expression getLeft() {

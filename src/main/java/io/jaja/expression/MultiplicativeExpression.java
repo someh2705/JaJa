@@ -1,14 +1,12 @@
 package io.jaja.expression;
 
+import io.jaja.AST;
 import io.jaja.token.Token;
 import io.jaja.utils.IteratorUtils;
 
 import java.util.Iterator;
 import java.util.Objects;
 
-/**
- *
- */
 public class MultiplicativeExpression implements Expression {
     private Expression left;
     private Token operator;
@@ -34,12 +32,12 @@ public class MultiplicativeExpression implements Expression {
     }
 
     @Override
-    public Iterator<Expression> iterator() {
-        return IteratorUtils.values(left, new PrimaryExpression(operator), right);
+    public Iterator<AST> iterator() {
+        return IteratorUtils.values(left, operator, right);
     }
 
     @Override
-    public Expression lastChild() {
+    public AST lastChild() {
         return right;
     }
 

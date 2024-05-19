@@ -1,5 +1,6 @@
 package io.jaja.statement;
 
+import io.jaja.AST;
 import io.jaja.expression.Expression;
 import io.jaja.expression.PrimaryExpression;
 import io.jaja.token.Token;
@@ -8,20 +9,23 @@ import io.jaja.utils.IteratorUtils;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class DeclareVariableStatement implements Statement {
+public class LocalVariableDeclarationStatement implements Statement {
+    private Token type;
     private Token identifier;
     private Expression expression;
 
-    public DeclareVariableStatement(Token identifier, Expression assignment) {
+    public LocalVariableDeclarationStatement(Token type, Token identifier, Expression expression) {
+        this.type = type;
         this.identifier = identifier;
-        this.expression = assignment;
+        this.expression = expression;
     }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DeclareVariableStatement that = (DeclareVariableStatement) o;
+        LocalVariableDeclarationStatement that = (LocalVariableDeclarationStatement) o;
         return Objects.equals(identifier, that.identifier) && Objects.equals(expression, that.expression);
     }
 
@@ -31,13 +35,13 @@ public class DeclareVariableStatement implements Statement {
     }
 
     @Override
-    public Expression lastChild() {
+    public AST lastChild() {
         return expression;
     }
 
     @Override
-    public Iterator<Expression> iterator() {
-        return IteratorUtils.values(new PrimaryExpression(identifier), expression);
+    public Iterator<AST> iterator() {
+        return IteratorUtils.values(type, identifier, expression);
     }
 
     public Token getIdentifier() {

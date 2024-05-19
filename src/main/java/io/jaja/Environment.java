@@ -25,7 +25,7 @@ public class Environment {
 
     public int call(Token identifier) {
         if (!environment.containsKey(identifier.field)) {
-            throw new Diagnostics("Unknown field" + identifier.field);
+            throw new Diagnostics("Unknown field " + identifier.field);
         }
 
         return environment.get(identifier.field);

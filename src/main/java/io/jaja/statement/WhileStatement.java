@@ -6,31 +6,32 @@ import io.jaja.utils.IteratorUtils;
 
 import java.util.Iterator;
 
-public class IfThenStatement implements Statement {
+public class WhileStatement implements Statement {
 
     private Expression condition;
-    private AST ast;
+    private AST body;
 
-    public IfThenStatement(Expression condition, AST ast) {
+    public WhileStatement(Expression condition, AST body) {
         this.condition = condition;
-        this.ast = ast;
+        this.body = body;
     }
+
 
     @Override
     public AST lastChild() {
-        return ast;
+        return body;
     }
 
     @Override
     public Iterator<AST> iterator() {
-        return IteratorUtils.values(condition, ast);
+        return IteratorUtils.values(condition, body);
     }
 
     public Expression getCondition() {
         return condition;
     }
 
-    public AST getAst() {
-        return ast;
+    public AST getBody() {
+        return body;
     }
 }

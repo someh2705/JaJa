@@ -16,7 +16,7 @@ public class Lexer {
         int pos = 0;
         while (pos < input.length()) {
             Token token = specification(input.substring(pos));
-            if (token.kind != TokenKind.WHITESPACE) {
+            if (token.kind != TokenKind.WHITESPACE && token.kind != TokenKind.EOL) {
                 tokens.add(token);
             }
             pos += token.field.length();

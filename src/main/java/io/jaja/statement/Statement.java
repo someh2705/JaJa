@@ -1,6 +1,7 @@
 package io.jaja.statement;
 
-import io.jaja.expression.Expression;
+import io.jaja.AST;
 
-public interface Statement extends Expression {
+public interface Statement extends AST {
+
 }

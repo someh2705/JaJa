@@ -63,4 +63,21 @@ public class RuntimeTest {
         assertEquals("", result3);
         assertEquals("20", result4);
     }
+
+    @Test
+    void preOrPostDecExpressionTest() {
+        Runtime runtime = new Runtime();
+
+        String declare = runtime.evaluate("int number = 10;");
+        String result1 = runtime.evaluate("++number");
+        String result2 = runtime.evaluate("number");
+        String result3 = runtime.evaluate("number++");
+        String result4 = runtime.evaluate("number");
+
+        assertEquals("number(10)", declare);
+        assertEquals("11", result1);
+        assertEquals("11", result2);
+        assertEquals("11", result3);
+        assertEquals("12", result4);
+    }
 }

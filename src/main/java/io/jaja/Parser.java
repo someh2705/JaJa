@@ -162,7 +162,7 @@ public class Parser {
     }
 
     private Expression parseMultiplicativeExpression() {
-        Expression expression = parsePrimaryExpression();
+        Expression expression = parseUnaryExpression();
 
         while (match(TokenKind.STAR, TokenKind.SLASH, TokenKind.PERCENT)) {
             Token operator = previous();
@@ -187,7 +187,6 @@ public class Parser {
     }
 
     private Expression parsePreIncOrDecExpression() {
-        needs(TokenKind.PLUSPLUS, TokenKind.SUBSUB);
         Token operator = previous();
         Expression expression = parseUnaryExpression();
 

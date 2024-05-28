@@ -3,6 +3,7 @@ package io.jaja;
 import io.jaja.bind.BindObject;
 import io.jaja.expression.*;
 import io.jaja.statement.*;
+import io.jaja.token.Token;
 import io.jaja.token.TokenKind;
 
 import java.util.ArrayList;
@@ -59,6 +60,14 @@ public class Runtime {
 
         if (expression instanceof MethodInvocationExpression) {
             return evaluateMethodInvocationExpression((MethodInvocationExpression) expression);
+        }
+
+        if (expression instanceof PostIncOrDecExpression) {
+            return evaluatePostIncOrDecExpression((PostIncOrDecExpression) expression);
+        }
+
+        if (expression instanceof PreIncOrDecExpression) {
+            return evaluatePreIncOrDecExpression((PreIncOrDecExpression) expression);
         }
 
         throw new Diagnostics("Unexpected expression : " + expression);
@@ -133,7 +142,7 @@ public class Runtime {
             return left.minus(right);
         }
 
-        throw new Diagnostics("Unexpected Operator: " + expression.getOperator().kind.getName());
+        throw new Diagnostics("Unexpected Operator: " + expression.getOperator().kind);
     }
 
     private BindObject<?> evaluateMultiplicativeExpression(MultiplicativeExpression expression) {
@@ -148,7 +157,7 @@ public class Runtime {
             return left.slash(right);
         }
 
-        throw new Diagnostics("Unexpected Operator: " + expression.getOperator().kind.getName());
+        throw new Diagnostics("Unexpected Operator: " + expression.getOperator().kind);
     }
 
     private BindObject<?> evaluatePrimaryExpression(PrimaryExpression expression) {
@@ -160,7 +169,7 @@ public class Runtime {
             return new BindObject<>(Integer.valueOf(expression.getToken().field));
         }
 
-        return new BindObject<>(expression.getToken().field);
+        return new BindObject<>(expression.getToken(), expression.getToken().field);
     }
 
     private BindObject<?> evaluateParenthesesExpression(ParenthesesExpression expression) {
@@ -171,7 +180,7 @@ public class Runtime {
         BindObject<?> evaluate = evaluate(expression.getExpression());
         environment.declare(expression.getIdentifier(), evaluate);
 
-        return new BindObject<>(expression.getIdentifier().field + "(" + evaluate.getValue() + ")");
+        return new BindObject<>(expression.getIdentifier(), expression.getIdentifier().field + "(" + evaluate.getValue() + ")");
     }
 
     private BindObject<?> evaluateAssignmentExpression(AssignmentExpression expression) {
@@ -179,5 +188,41 @@ public class Runtime {
         environment.assignment(expression.getIdentifier(), evaluate);
 
         return evaluate;
+    }
+
+    private BindObject<?> evaluatePreIncOrDecExpression(PreIncOrDecExpression expression) {
+        BindObject<?> current = evaluate(expression.getExpression());
+        Token identifier = current.getIdentifier();
+
+        if (expression.getOperator().kind == TokenKind.PLUSPLUS) {
+            current = current.plus(new BindObject<>(1));
+            environment.assignment(identifier, current);
+            return current;
+        }
+
+        if (expression.getOperator().kind == TokenKind.SUBSUB) {
+            current = current.plus(new BindObject<>(-1));
+            environment.assignment(identifier, current);
+            return current;
+        }
+
+        throw new Diagnostics("Unexpected Operator: " + expression.getOperator().kind);
+    }
+
+    private BindObject<?> evaluatePostIncOrDecExpression(PostIncOrDecExpression expression) {
+        BindObject<?> current = evaluate(expression.getExpression());
+        Token identifier = current.getIdentifier();
+
+        if (expression.getOperator().kind == TokenKind.PLUSPLUS) {
+            environment.assignment(identifier, current.plus(new BindObject<>(1)));
+            return current;
+        }
+
+        if (expression.getOperator().kind == TokenKind.SUBSUB) {
+            environment.assignment(identifier, current.plus(new BindObject<>(-1)));
+            return current;
+        }
+
+        throw new Diagnostics("Unexpected Operator: " + expression.getOperator().kind);
     }
 }

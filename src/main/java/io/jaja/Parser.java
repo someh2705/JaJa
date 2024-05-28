@@ -30,7 +30,11 @@ public class Parser {
         try {
             Statement statement = parseStatement();
             return statement;
-        } catch (Diagnostics _error) {
+        } catch (Diagnostics error) {
+            if (error.isPanic()) {
+                throw error;
+            }
+
             position = current;
             Expression expression = parseExpression();
             return expression;
@@ -78,11 +82,48 @@ public class Parser {
             }
         }
 
-        Statement body = parseBlockStatement();
+        BlockStatement body = parseBlockStatement();
+
+        if (returnType.kind == TokenKind.VOID) {
+            body.forEach((statement) -> {
+                if (statement instanceof PrimaryReturnStatement) {
+                    error("Cannot return a value from a method with void result type", true);
+                }
+            });
+        }
+
+        if (returnType.kind != TokenKind.VOID) {
+            body.forEach((statement) -> {
+                if (statement instanceof VoidReturnStatement) {
+                    error("Cannot return a value from a method with void result type", true);
+                }
+            });
+        }
+
+        AST returnStatement = body.lastChild();
+
+        if (returnType.kind == TokenKind.VOID) {
+            if (returnStatement instanceof VoidReturnStatement) {
+                return new MethodDeclarationStatement(returnType, methodName, parameters, body);
+            }
+
+            if (returnStatement instanceof ReturnStatement) {
+                error("Cannot return a value from a method with void result type", true);
+            }
+        }
+
+        if (!(returnStatement instanceof ReturnStatement)) {
+            error("Missing return statement", true);
+        }
+
+        if (returnStatement instanceof VoidReturnStatement) {
+            error("Missing return value", true);
+        }
+
         return new MethodDeclarationStatement(returnType, methodName, parameters, body);
     }
 
-    private Statement parseBlockStatement() {
+    private BlockStatement parseBlockStatement() {
         ArrayList<AST> asts = new ArrayList<>();
 
         needs(TokenKind.LBRACE);
@@ -111,9 +152,13 @@ public class Parser {
     }
 
     private Statement parseReturnStatement() {
+        if (match(TokenKind.SEMICOLON)) {
+            return new VoidReturnStatement();
+        }
+
         Expression expression = parseExpression();
         needs(TokenKind.SEMICOLON);
-        return new ReturnStatement(expression);
+        return new PrimaryReturnStatement(expression);
     }
 
     private Expression parseExpression() {
@@ -348,6 +393,10 @@ public class Parser {
     }
 
     private void error(String message) {
-        throw new Diagnostics(message);
+        error(message, false);
+    }
+
+    private void error(String message, boolean panic) {
+        throw new Diagnostics(message, panic);
     }
 }

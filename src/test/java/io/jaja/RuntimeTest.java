@@ -44,24 +44,28 @@ public class RuntimeTest {
         Runtime runtime = new Runtime();
 
         String declare = runtime.evaluate("int number = 10;");
-        String result1 = runtime.evaluate("if (number == 10) number");
-        String result2 = runtime.evaluate("if (number == 20) number");
+        String result1 = runtime.evaluate("if (number == 10) number = number + 1;");
+        String result2 = runtime.evaluate("number");
+        String result3 = runtime.evaluate("if (number == 20) number++;");
+        String result4 = runtime.evaluate("number");
 
         assertEquals("number(10)", declare);
-        assertEquals("10", result1);
-        assertEquals("", result2);
+        assertEquals("", result1);
+        assertEquals("11", result2);
+        assertEquals("", result3);
+        assertEquals("11", result4);
 
         String multipleLine = new StringBuilder()
-            .append("if (number == 10) {")
+            .append("if (number == 11) {")
             .append("    number = 20;")
             .append("}")
             .toString();
 
-        String result3 = runtime.evaluate(multipleLine);
-        String result4 = runtime.evaluate("number");
+        String result5 = runtime.evaluate(multipleLine);
+        String result6 = runtime.evaluate("number");
 
-        assertEquals("", result3);
-        assertEquals("20", result4);
+        assertEquals("", result5);
+        assertEquals("20", result6);
     }
 
     @Test

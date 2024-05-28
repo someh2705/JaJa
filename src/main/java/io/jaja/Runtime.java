@@ -1,6 +1,8 @@
 package io.jaja;
 
 import io.jaja.bind.BindObject;
+import io.jaja.bind.ResultObject;
+import io.jaja.bind.ShellResult;
 import io.jaja.expression.*;
 import io.jaja.statement.*;
 import io.jaja.token.Token;
@@ -11,21 +13,22 @@ import java.util.ArrayList;
 public class Runtime {
 
     private Environment environment = new Environment();
+    private final ResultObject nothing = new ResultObject();
     private final BindObject<String> emptyObject = new BindObject<>("");
     private final BindObject<Boolean> trueObject = new BindObject<>(true);
     private final BindObject<Boolean> falseObject = new BindObject<>(false);
 
     public String evaluate(String input) {
         Parser parser = new Parser(input);
-        return String.valueOf(evaluate(parser.parse()).getValue());
+        return evaluate(parser.parse()).message();
     }
 
-    private BindObject<?> evaluate(Program program) {
+    private ShellResult evaluate(Program program) {
         AST ast = program.getAST();
         return evaluate(ast);
     }
 
-    private BindObject<?> evaluate(AST ast) {
+    private ShellResult evaluate(AST ast) {
         if (ast instanceof Statement) {
             return evaluate((Statement) ast);
         }
@@ -73,7 +76,7 @@ public class Runtime {
         throw new Diagnostics("Unexpected expression : " + expression);
     }
 
-    private BindObject<?> evaluate(Statement statement) {
+    private ResultObject evaluate(Statement statement) {
         if (statement instanceof LocalVariableDeclarationStatement) {
             return evaluateDeclareVariableStatement((LocalVariableDeclarationStatement) statement);
         }
@@ -90,32 +93,36 @@ public class Runtime {
             return evaluateBlockStatement((BlockStatement) statement);
         }
 
+        if (statement instanceof MethodDeclarationStatement) {
+            return evaluateBlockStatement((BlockStatement) statement);
+        }
+
         throw new Diagnostics("Unexpected statement : " + statement);
     }
 
-    private BindObject<?> evaluateIfThenStatement(IfThenStatement expression) {
+    private ResultObject evaluateIfThenStatement(IfThenStatement expression) {
         if ((Boolean) evaluate(expression.getCondition()).getValue()) {
-            return evaluate(expression.getAst());
+            evaluate(expression.getAst());
         }
 
-        return emptyObject;
+        return nothing;
     }
 
-    private BindObject<?> evaluateWhileStatement(WhileStatement statement) {
+    private ResultObject evaluateWhileStatement(WhileStatement statement) {
         while ((Boolean) evaluate(statement.getCondition()).getValue()) {
             evaluate(statement.getBody());
         }
 
-        return emptyObject;
+        return nothing;
     }
 
-    private BindObject<?> evaluateBlockStatement(BlockStatement statement) {
+    private ResultObject evaluateBlockStatement(BlockStatement statement) {
         ArrayList<AST> asts = statement.getAsts();
         for (AST ast: asts) {
             evaluate(ast);
         }
 
-        return emptyObject;
+        return nothing;
     }
 
     private BindObject<?> evaluateEqualityExpression(EqualityExpression expression) {
@@ -176,11 +183,11 @@ public class Runtime {
         return evaluate(expression.getExpression());
     }
 
-    private BindObject<?> evaluateDeclareVariableStatement(LocalVariableDeclarationStatement expression) {
+    private ResultObject evaluateDeclareVariableStatement(LocalVariableDeclarationStatement expression) {
         BindObject<?> evaluate = evaluate(expression.getExpression());
         environment.declare(expression.getIdentifier(), evaluate);
 
-        return new BindObject<>(expression.getIdentifier(), expression.getIdentifier().field + "(" + evaluate.getValue() + ")");
+        return new ResultObject(expression.getIdentifier().field + "(" + evaluate.getValue() + ")");
     }
 
     private BindObject<?> evaluateAssignmentExpression(AssignmentExpression expression) {

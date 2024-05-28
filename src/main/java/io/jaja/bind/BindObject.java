@@ -3,7 +3,7 @@ package io.jaja.bind;
 import io.jaja.Diagnostics;
 import io.jaja.token.Token;
 
-public class BindObject<T> {
+public class BindObject<T> implements ShellResult {
     private Token identifier;
     private T value;
 
@@ -116,5 +116,10 @@ public class BindObject<T> {
 
     private BindObject<?> error(String message) {
         throw new Diagnostics(message);
+    }
+
+    @Override
+    public String message() {
+        return String.valueOf(value);
     }
 }

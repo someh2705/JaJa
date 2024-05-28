@@ -2,6 +2,7 @@ package io.jaja.bind;
 
 import io.jaja.Diagnostics;
 import io.jaja.token.Token;
+import io.jaja.token.TokenKind;
 
 public class BindObject<T> implements ShellResult {
     private Token identifier;
@@ -106,6 +107,37 @@ public class BindObject<T> implements ShellResult {
         throw new Diagnostics("Unsupported Type: " + value.getClass() + " - " + other.value.getClass());
     }
 
+    public void expect(Token returnType) {
+        switch (returnType.kind) {
+            case BYTE:
+                assertIsValidType(value instanceof Byte, returnType.kind);
+                break;
+            case SHORT:
+                assertIsValidType(value instanceof Short, returnType.kind);
+                break;
+            case INT:
+                assertIsValidType(value instanceof Integer, returnType.kind);
+                break;
+            case LONG:
+                assertIsValidType(value instanceof Long, returnType.kind);
+                break;
+            case CHAR:
+                assertIsValidType(value instanceof Character, returnType.kind);
+                break;
+            case FLOAT:
+                assertIsValidType(value instanceof Float, returnType.kind);
+                break;
+            case DOUBLE:
+                assertIsValidType(value instanceof Double, returnType.kind);
+                break;
+            case BOOLEAN:
+                assertIsValidType(value instanceof Boolean, returnType.kind);
+                break;
+            default:
+                throw new Diagnostics("Unexpected Type: " + returnType.kind);
+        }
+    }
+
     private boolean isInt() {
         return value instanceof Integer;
     }
@@ -121,5 +153,11 @@ public class BindObject<T> implements ShellResult {
     @Override
     public String message() {
         return String.valueOf(value);
+    }
+
+    private void assertIsValidType(boolean isValid, TokenKind returnType) {
+        if (!isValid) {
+            throw new Diagnostics("Require Type: " + returnType + " Provided: " + value);
+        }
     }
 }

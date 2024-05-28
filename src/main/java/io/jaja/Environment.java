@@ -19,12 +19,11 @@ public class Environment {
     }
 
     public void declare(Token identifier, BindObject<?> evaluate) {
-
         if (environment.containsKey(identifier.field)) {
             throw new Diagnostics("Duplicate declaration of " + identifier.field);
         }
 
-        environment.put(identifier.field, evaluate);
+        environment.put(identifier.field, new BindObject<>(identifier, evaluate.getValue()));
     }
 
     public void assignment(Token identifier, BindObject<?> evaluate) {

@@ -1,12 +1,23 @@
 package io.jaja.bind;
 
 import io.jaja.Diagnostics;
+import io.jaja.token.Token;
 
 public class BindObject<T> {
+    private Token identifier;
     private T value;
 
-    public BindObject(T value) {
+    public BindObject(Token identifier, T value) {
+        this.identifier = identifier;
         this.value = value;
+    }
+
+    public BindObject(T value) {
+        this(null, value);
+    }
+
+    public Token getIdentifier() {
+        return identifier;
     }
 
     public T getValue() {
@@ -15,19 +26,19 @@ public class BindObject<T> {
 
     public BindObject<?> plus(BindObject<?> other) {
         if (isInt() && other.isInt()) {
-            return new BindObject<>((Integer) value + (Integer) other.value);
+            return new BindObject<>(identifier, (Integer) value + (Integer) other.value);
         }
 
         if (isInt() && other.isString()) {
-            return new BindObject<>((int) value + (String) other.value);
+            return new BindObject<>(identifier, (int) value + (String) other.value);
         }
 
         if (isString() && other.isInt()) {
-            return new BindObject<>((String) value + (int) other.value);
+            return new BindObject<>(identifier, (String) value + (int) other.value);
         }
 
         if (isString() && other.isString()) {
-            return new BindObject<>((String) value + (String) other.value);
+            return new BindObject<>(identifier, (String) value + (String) other.value);
         }
 
         throw new Diagnostics("Unsupported Type: " + value.getClass() + " + " + other.value.getClass());
@@ -36,7 +47,7 @@ public class BindObject<T> {
 
     public BindObject<?> minus(BindObject<?> other) {
         if (isInt() && other.isInt()) {
-            return new BindObject<>((Integer) value - (Integer) other.value);
+            return new BindObject<>(identifier, (Integer) value - (Integer) other.value);
         }
 
         if (isInt() && other.isString()) {
@@ -56,7 +67,7 @@ public class BindObject<T> {
 
     public BindObject<?> mul(BindObject<?> other) {
         if (isInt() && other.isInt()) {
-            return new BindObject<>((Integer) value * (Integer) other.value);
+            return new BindObject<>(identifier, (Integer) value * (Integer) other.value);
         }
 
         if (isInt() && other.isString()) {
@@ -77,7 +88,7 @@ public class BindObject<T> {
 
     public BindObject<?> slash(BindObject<?> other) {
         if (isInt() && other.isInt()) {
-            return new BindObject<>((Integer) value / (Integer) other.value);
+            return new BindObject<>(identifier, (Integer) value / (Integer) other.value);
         }
 
         if (isInt() && other.isString()) {

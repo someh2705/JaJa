@@ -126,6 +126,10 @@ public enum TokenKind {
         this.rule = rule;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String parse(String string) {
         String result = parseImpl(string);
 

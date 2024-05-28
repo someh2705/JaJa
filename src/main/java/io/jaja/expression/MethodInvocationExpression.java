@@ -28,4 +28,12 @@ public class MethodInvocationExpression implements Expression {
         asts.addAll(arguments);
         return asts.iterator();
     }
+
+    public Token getIdentifier() {
+        return identifier;
+    }
+
+    public List<Expression> getArguments() {
+        return arguments;
+    }
 }

@@ -53,4 +53,8 @@ public class MultiplicativeExpression implements Expression {
     public Expression getRight() {
         return right;
     }
+
+    public Token getOperator() {
+        return operator;
+    }
 }

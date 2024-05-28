@@ -15,6 +15,12 @@ public class Shell {
     private static Runtime runtime = new Runtime();
 
     public static void main(String[] args) {
+        System.out.println("Welcome to Jaja");
+        System.out.println("1. #compile(filename): compile jaja file");
+        System.out.println("2. #print(expression): print expression");
+        System.out.println("3. #parse(): switch show AST expression flag");
+        System.out.println("4. #reset(): reset environment");
+
         do {
             try {
                 scanBlock(0, new StringBuilder());

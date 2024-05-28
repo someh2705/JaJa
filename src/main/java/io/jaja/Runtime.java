@@ -4,15 +4,19 @@ import io.jaja.bind.BindObject;
 import io.jaja.bind.ResultObject;
 import io.jaja.bind.ReturnObject;
 import io.jaja.bind.ShellResult;
+import io.jaja.builtin.BuiltInMethod;
 import io.jaja.expression.*;
 import io.jaja.statement.*;
 import io.jaja.token.Token;
 import io.jaja.token.TokenKind;
+import io.jaja.utils.Printer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Runtime {
 
+    private boolean isShowAST = false;
     private Environment environment = new Environment();
     private final ResultObject nothing = new ResultObject();
     private final BindObject<String> emptyObject = new BindObject<>("");
@@ -26,6 +30,9 @@ public class Runtime {
 
     private ShellResult evaluate(Program program) {
         AST ast = program.getAST();
+        if (isShowAST) {
+            Printer.pretty(ast);
+        }
         return evaluate(ast);
     }
 
@@ -105,12 +112,14 @@ public class Runtime {
         throw new Diagnostics("Unexpected statement : " + statement);
     }
 
-    private BindObject<?> evaluateMethodBody(BlockStatement body) {
+    private BindObject<?> evaluateMethodBody(Token returnType, BlockStatement body) {
         for (AST statement : body) {
             try {
                 evaluate(statement);
             } catch (ReturnObject o) {
-                return o.getValue();
+                BindObject<?> value = o.getValue();
+                value.expect(returnType);
+                return value;
             }
         }
         return emptyObject;
@@ -162,18 +171,60 @@ public class Runtime {
     }
 
     private BindObject<?> evaluateMethodInvocationExpression(MethodInvocationExpression expression) {
+
         BindObject<?>[] arguments = new BindObject[expression.getArguments().size()];
         for (int i = 0; i < arguments.length; i++) {
             arguments[i] = evaluate(expression.getArguments().get(i));
         }
 
+        if (expression.isBuiltIn()) {
+            return evaluateBuiltInMethodInvocation(expression, arguments);
+        }
+
         Environment current = environment;
         environment = new Environment(environment);
-        BlockStatement block = environment.invoke(expression.getIdentifier(), arguments);
-        BindObject<?> result = evaluateMethodBody(block);
+        MethodDeclarationStatement method = environment.invoke(expression.getIdentifier(), arguments);
+        BindObject<?> result = evaluateMethodBody(method.getReturnType(), method.getBody());
         environment = current;
 
         return result;
+    }
+
+    private BindObject<?> evaluateBuiltInMethodInvocation(MethodInvocationExpression expression, BindObject<?>[] arguments) {
+        Token builtIn = expression.getIdentifier();
+
+        if (builtIn.kind == TokenKind.COMPILE) {
+            if (arguments.length != 1) {
+                throw new Diagnostics("#compile needs 1 arguments, but :" + Arrays.toString(arguments));
+            }
+            Program program = BuiltInMethod.compileFile((String) arguments[0].getValue());
+            evaluate(program);
+        }
+
+        if (builtIn.kind == TokenKind.PRINT) {
+            if (arguments.length != 1) {
+                throw new Diagnostics("#print needs 1 arguments, but :" + Arrays.toString(arguments));
+            }
+            BuiltInMethod.println(arguments[0]);
+        }
+
+        if (builtIn.kind == TokenKind.PARSE) {
+            if (arguments.length != 0) {
+                throw new Diagnostics("#print needs 0 arguments, but :" + Arrays.toString(arguments));
+            }
+            isShowAST = !isShowAST;
+            System.out.println("[DEBUG] isShowAST: " + isShowAST);
+        }
+
+        if (builtIn.kind == TokenKind.RESET) {
+            if (arguments.length != 0) {
+                throw new Diagnostics("#print needs 0 arguments, but :" + Arrays.toString(arguments));
+            }
+            environment = new Environment();
+            System.out.println("Success to reset environment");
+        }
+
+        return emptyObject;
     }
 
     private BindObject<?> evaluateAdditiveExpression(AdditiveExpression expression) {

@@ -14,7 +14,7 @@ public class Printer {
      * │
      */
     private static void pretty(AST node, String indent, boolean isLast) {
-        String marker = isLast ? "└──" : "├──";
+        String marker = isLast ? "\u2524\u2500\u2500\u2500" : "\u251C\u2500\u2500";
 
         System.out.print(indent);
         System.out.print(marker);
@@ -22,7 +22,7 @@ public class Printer {
 
         System.out.println();
 
-        indent += isLast ? "   " : "│  ";
+        indent += isLast ? "   " : "\u2502  ";
         for (AST child : node) {
             pretty(child, indent, child == node.lastChild());
         }

@@ -3,7 +3,6 @@ package io.jaja;
 import io.jaja.bind.BindObject;
 import io.jaja.bind.FunctionObject;
 import io.jaja.bind.Parameter;
-import io.jaja.statement.BlockStatement;
 import io.jaja.statement.MethodDeclarationStatement;
 import io.jaja.token.Token;
 import io.jaja.token.TokenKind;
@@ -37,7 +36,7 @@ public class Environment {
         environment.put(identifier.field, evaluate);
     }
 
-    public BlockStatement invoke(Token identifier, BindObject<?>... arguments) {
+    public MethodDeclarationStatement invoke(Token identifier, BindObject<?>... arguments) {
         try {
             BindObject<MethodDeclarationStatement> function = (BindObject<MethodDeclarationStatement>) access(identifier.field);
             MethodDeclarationStatement statement = function.getValue();
@@ -55,7 +54,7 @@ public class Environment {
                 declare(parameter.getIdentifier(), argument);
             }
 
-            return statement.getBody();
+            return statement;
         } catch (Exception e) {
             if (e instanceof Diagnostics) {
                 throw (Diagnostics) e;

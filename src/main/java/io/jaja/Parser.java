@@ -323,6 +323,11 @@ public class Parser {
             return new MethodInvocationExpression(token, arguments);
         }
 
+        if (token.kind == TokenKind.STRINGLITERAL) {
+            String field = token.field.replace("\"", "");
+            return new PrimaryExpression(new Token(TokenKind.STRINGLITERAL, field));
+        }
+
         return new PrimaryExpression(token);
     }
 

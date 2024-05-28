@@ -36,4 +36,16 @@ public class MethodInvocationExpression implements Expression {
     public List<Expression> getArguments() {
         return arguments;
     }
+
+    public boolean isBuiltIn() {
+        switch (identifier.kind) {
+            case COMPILE:
+            case PRINT:
+            case PARSE:
+            case RESET:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

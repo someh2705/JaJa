@@ -84,4 +84,18 @@ public class RuntimeTest {
         assertEquals("11", result3);
         assertEquals("12", result4);
     }
+
+    @Test
+    void methodTest() {
+        Runtime runtime = new Runtime();
+
+        runtime.evaluate("#compile(\"fibo.jaja\")");
+        String result1 = runtime.evaluate("fibo(1)");
+        String result2 = runtime.evaluate("fibo(2)");
+        String result3 = runtime.evaluate("fibo(3)");
+
+        assertEquals("1", result1);
+        assertEquals("1", result2);
+        assertEquals("2", result3);
+    }
 }

@@ -216,6 +216,14 @@ public class Runtime {
             System.out.println("[DEBUG] isShowAST: " + isShowAST);
         }
 
+        if (builtIn.kind == TokenKind.RESET) {
+            if (arguments.length != 0) {
+                throw new Diagnostics("#print needs 0 arguments, but :" + Arrays.toString(arguments));
+            }
+            environment = new Environment();
+            System.out.println("Success to reset environment");
+        }
+
         return emptyObject;
     }
 

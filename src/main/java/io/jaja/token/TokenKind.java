@@ -73,6 +73,12 @@ public enum TokenKind {
     BREAK("break", TokenRule.SEPARATE),
     RETURN("return", TokenRule.SEPARATE),
 
+    // BuiltIn Method
+    COMPILE("#compile", TokenRule.SEPARATE),
+    PARSE("#parse", TokenRule.SEPARATE),
+    PRINT("#print", TokenRule.SEPARATE),
+    RESET("#reset", TokenRule.SEPARATE),
+
     WHITESPACE(TokenTag.WHITESPACE, TokenRule.DEFAULT),
     IDENTIFIER(TokenTag.JAVA_IDENTIFIER),
     FLOATLITERAL(TokenTag.FLOAT_NUMERAL),

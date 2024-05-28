@@ -25,4 +25,11 @@ public class BlockStatement implements Statement {
     public ArrayList<AST> getAsts() {
         return asts;
     }
+
+    @Override
+    public String toString() {
+        return "BlockStatement{" +
+            "asts=" + asts +
+            '}';
+    }
 }

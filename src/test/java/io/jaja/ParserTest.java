@@ -1,10 +1,7 @@
 package io.jaja;
 
 import io.jaja.expression.*;
-import io.jaja.statement.BlockStatement;
-import io.jaja.statement.IfThenStatement;
-import io.jaja.statement.LocalVariableDeclarationStatement;
-import io.jaja.statement.WhileStatement;
+import io.jaja.statement.*;
 import io.jaja.token.Token;
 import io.jaja.utils.Printer;
 import org.junit.jupiter.api.AfterEach;
@@ -144,6 +141,29 @@ public class ParserTest {
             MethodInvocationExpression.class,
                 Token.class,
                 PrimaryExpression.class
+        );
+    }
+
+    @Test
+    void methodDeclareTest() {
+        Parser parser = new Parser("int add(int a, int b) { return a + b; }");
+        Program program = parser.parse();
+
+        assertTreeOf(
+            program,
+            MethodDeclarationStatement.class,
+                Token.class, // int
+                Token.class, // add
+                Token.class, // int
+                Token.class, // a
+                Token.class, // int
+                Token.class, // b
+                BlockStatement.class,
+                    ReturnStatement.class,
+                        AdditiveExpression.class,
+                            PrimaryExpression.class,
+                            Token.class,
+                            PrimaryExpression.class
         );
     }
 

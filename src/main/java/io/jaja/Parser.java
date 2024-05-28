@@ -38,16 +38,54 @@ public class Parser {
     }
 
     private Statement parseStatement() {
-        if (match(TokenKind.LBRACE)) return parseBlockStatement();
+        if (peek().kind == TokenKind.LBRACE) return parseBlockStatement();
         if (match(TokenKind.IF)) return parseIfThenStatement();
         if (match(TokenKind.WHILE)) return parseWhileStatement();
+        if (match(TokenKind.RETURN)) return parseReturnStatement();
 
-        return parseLocalVariableDeclarationStatement();
+        return parseMethodDeclarationStatement();
+    }
+
+    private Statement parseMethodDeclarationStatement() {
+        if (!check(TokenKind.getPrimitiveTokens()) && !check(TokenKind.VOID)) {
+            error("Unexpected token of declaration: " + peek());
+        }
+
+        if (!check(1, TokenKind.IDENTIFIER)) {
+            error("expected identifier token, but found " + peek(1));
+        }
+
+        if (!check(2, TokenKind.LPAREN))
+            return parseLocalVariableDeclarationStatement();
+
+        Token returnType = consume();
+        Token methodName = consume();
+
+        List<Token> parameters = new ArrayList<>(3);
+        needs(TokenKind.LPAREN);
+
+        while (!match(TokenKind.RPAREN)) {
+            Token parameterType = parseUnannType();
+            if (parameterType == null) {
+                error("parameter needs type");
+            }
+            needs(TokenKind.IDENTIFIER);
+            parameters.add(parameterType);
+            parameters.add(previous());
+
+            if (!check(TokenKind.RPAREN)) {
+                needs(TokenKind.COMMA);
+            }
+        }
+
+        Statement body = parseBlockStatement();
+        return new MethodDeclarationStatement(returnType, methodName, parameters, body);
     }
 
     private Statement parseBlockStatement() {
         ArrayList<AST> asts = new ArrayList<>();
 
+        needs(TokenKind.LBRACE);
         do {
             asts.add(parseImpl());
         } while (!match(TokenKind.RBRACE));
@@ -70,6 +108,12 @@ public class Parser {
         needs(TokenKind.RPAREN);
         AST ast = parseImpl();
         return new WhileStatement(expression, ast);
+    }
+
+    private Statement parseReturnStatement() {
+        Expression expression = parseExpression();
+        needs(TokenKind.SEMICOLON);
+        return new ReturnStatement(expression);
     }
 
     private Expression parseExpression() {
@@ -250,7 +294,31 @@ public class Parser {
     }
 
     private boolean check(TokenKind kind) {
-        return peek().kind == kind;
+        return check(0, kind);
+    }
+
+    private boolean check(int offset, TokenKind kind) {
+        return peek(offset).kind == kind;
+    }
+
+    private boolean check(TokenKind... kinds) {
+        for (TokenKind kind : kinds) {
+            if (check(kind)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean check(int offset, TokenKind... kinds) {
+        for (TokenKind kind : kinds) {
+            if (check(offset, kind)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean match(TokenKind... kinds) {

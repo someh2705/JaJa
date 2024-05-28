@@ -2,6 +2,7 @@ package io.jaja;
 
 import io.jaja.bind.BindObject;
 import io.jaja.bind.ResultObject;
+import io.jaja.bind.ReturnObject;
 import io.jaja.bind.ShellResult;
 import io.jaja.expression.*;
 import io.jaja.statement.*;
@@ -93,11 +94,34 @@ public class Runtime {
             return evaluateBlockStatement((BlockStatement) statement);
         }
 
+        if (statement instanceof ReturnStatement) {
+            throw new ReturnObject(evaluateReturnStatement((ReturnStatement) statement));
+        }
+
         if (statement instanceof MethodDeclarationStatement) {
-            return evaluateBlockStatement((BlockStatement) statement);
+            return evaluateMethodDeclarationStatement((MethodDeclarationStatement) statement);
         }
 
         throw new Diagnostics("Unexpected statement : " + statement);
+    }
+
+    private BindObject<?> evaluateMethodBody(BlockStatement body) {
+        for (AST statement : body) {
+            try {
+                evaluate(statement);
+            } catch (ReturnObject o) {
+                return o.getValue();
+            }
+        }
+        return emptyObject;
+    }
+
+    private BindObject<?> evaluateReturnStatement(ReturnStatement statement) {
+        if (statement instanceof VoidReturnStatement) {
+            return emptyObject;
+        }
+
+        return evaluate(((PrimaryReturnStatement) statement).getExpression());
     }
 
     private ResultObject evaluateIfThenStatement(IfThenStatement expression) {
@@ -125,6 +149,11 @@ public class Runtime {
         return nothing;
     }
 
+    private ResultObject evaluateMethodDeclarationStatement(MethodDeclarationStatement method) {
+        environment.declare(method.getMethodName(), new BindObject<>(method));
+        return new ResultObject(method.getMethodName().field);
+    }
+
     private BindObject<?> evaluateEqualityExpression(EqualityExpression expression) {
         BindObject<?> left = evaluate(expression.getLeft());
         BindObject<?> right = evaluate(expression.getRight());
@@ -133,8 +162,18 @@ public class Runtime {
     }
 
     private BindObject<?> evaluateMethodInvocationExpression(MethodInvocationExpression expression) {
-        Environment local = new Environment(environment);
-        return local.call(expression);
+        BindObject<?>[] arguments = new BindObject[expression.getArguments().size()];
+        for (int i = 0; i < arguments.length; i++) {
+            arguments[i] = evaluate(expression.getArguments().get(i));
+        }
+
+        Environment current = environment;
+        environment = new Environment(environment);
+        BlockStatement block = environment.invoke(expression.getIdentifier(), arguments);
+        BindObject<?> result = evaluateMethodBody(block);
+        environment = current;
+
+        return result;
     }
 
     private BindObject<?> evaluateAdditiveExpression(AdditiveExpression expression) {

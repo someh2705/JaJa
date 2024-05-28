@@ -22,4 +22,8 @@ public class PrimaryReturnStatement extends ReturnStatement {
     public Iterator<AST> iterator() {
         return IteratorUtils.values(expression);
     }
+
+    public Expression getExpression() {
+        return expression;
+    }
 }

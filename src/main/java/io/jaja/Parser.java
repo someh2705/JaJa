@@ -1,5 +1,6 @@
 package io.jaja;
 
+import io.jaja.bind.Parameter;
 import io.jaja.expression.*;
 import io.jaja.statement.*;
 import io.jaja.token.Token;
@@ -65,7 +66,7 @@ public class Parser {
         Token returnType = consume();
         Token methodName = consume();
 
-        List<Token> parameters = new ArrayList<>(3);
+        List<Parameter> parameters = new ArrayList<>(3);
         needs(TokenKind.LPAREN);
 
         while (!match(TokenKind.RPAREN)) {
@@ -74,8 +75,7 @@ public class Parser {
                 error("parameter needs type");
             }
             needs(TokenKind.IDENTIFIER);
-            parameters.add(parameterType);
-            parameters.add(previous());
+            parameters.add(new Parameter(parameterType, previous()));
 
             if (!check(TokenKind.RPAREN)) {
                 needs(TokenKind.COMMA);
@@ -312,9 +312,13 @@ public class Parser {
         if (match(TokenKind.LPAREN)) {
             ArrayList<Expression> arguments = new ArrayList<>();
 
-            do {
+            while (!match(TokenKind.RPAREN)) {
                 arguments.add(parseExpression());
-            } while (!match(TokenKind.RPAREN));
+
+                if (peek().kind != TokenKind.RPAREN) {
+                    needs(TokenKind.COMMA);
+                }
+            }
 
             return new MethodInvocationExpression(token, arguments);
         }

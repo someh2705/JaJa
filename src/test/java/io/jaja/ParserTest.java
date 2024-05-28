@@ -1,11 +1,9 @@
 package io.jaja;
 
 import io.jaja.expression.*;
-import io.jaja.statement.BlockStatement;
-import io.jaja.statement.IfThenStatement;
-import io.jaja.statement.LocalVariableDeclarationStatement;
-import io.jaja.statement.WhileStatement;
+import io.jaja.statement.*;
 import io.jaja.token.Token;
+import io.jaja.token.TokenKind;
 import io.jaja.utils.Printer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ParserTest {
     private PrintStream oldOut;
@@ -132,6 +132,63 @@ public class ParserTest {
                         Token.class,
                         PrimaryExpression.class
         );
+    }
+
+    @Test
+    void methodInvocationTest() {
+        Parser parser = new Parser("println(\"Hello World\")");
+        Program program = parser.parse();
+
+        assertTreeOf(
+            program,
+            MethodInvocationExpression.class,
+                Token.class,
+                PrimaryExpression.class
+        );
+    }
+
+    @Test
+    void methodDeclareTest() {
+        TokenKind[] primitiveTypes = TokenKind.getPrimitiveTokens();
+
+        for (TokenKind returnType : primitiveTypes) {
+            for (TokenKind param1 : primitiveTypes) {
+                for (TokenKind param2 : primitiveTypes) {
+                    Parser parser = new Parser(returnType.getName() + " add(" + param1.getName() + " a, " + param2.getName() + " b) { return a + b; }");
+                    Program program = parser.parse();
+
+                    assertTreeOf(
+                        program,
+                        MethodDeclarationStatement.class,
+                        Token.class, // int
+                        Token.class, // add
+                        Token.class, // int
+                        Token.class, // a
+                        Token.class, // int
+                        Token.class, // b
+                        BlockStatement.class,
+                            ReturnStatement.class,
+                                AdditiveExpression.class,
+                                    PrimaryExpression.class,
+                                    Token.class,
+                                    PrimaryExpression.class
+                    );
+                }
+            }
+        }
+    }
+
+    @Test
+    void methodReturnTest() {
+        TokenKind[] primitiveTypes = TokenKind.getPrimitiveTokens();
+
+        for (TokenKind returnType: primitiveTypes) {
+            Parser parser = new Parser(returnType.getName() + " add() { return; }");
+            assertThrows(Diagnostics.class, parser::parse);
+        }
+
+        Parser parser = new Parser("void add() { int number = 10;\n return number; }");
+        assertThrows(Diagnostics.class, parser::parse);
     }
 
     private void assertTreeOf(Program program, Class<? extends AST>... expected) {

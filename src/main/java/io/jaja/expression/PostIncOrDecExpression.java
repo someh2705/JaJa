@@ -25,4 +25,12 @@ public class PostIncOrDecExpression implements Expression {
     public Iterator<AST> iterator() {
         return IteratorUtils.values(operator, expression);
     }
+
+    public Token getOperator() {
+        return operator;
+    }
+
+    public Expression getExpression() {
+        return expression;
+    }
 }

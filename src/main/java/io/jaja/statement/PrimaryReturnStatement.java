@@ -1,18 +1,15 @@
-package io.jaja.expression;
+package io.jaja.statement;
 
 import io.jaja.AST;
-import io.jaja.token.Token;
+import io.jaja.expression.Expression;
 import io.jaja.utils.IteratorUtils;
 
 import java.util.Iterator;
 
-public class PreIncOrDecExpression implements Expression {
-
-    private Token operator;
+public class PrimaryReturnStatement extends ReturnStatement {
     private Expression expression;
 
-    public PreIncOrDecExpression(Token operator, Expression expression) {
-        this.operator = operator;
+    public PrimaryReturnStatement(Expression expression) {
         this.expression = expression;
     }
 
@@ -23,11 +20,7 @@ public class PreIncOrDecExpression implements Expression {
 
     @Override
     public Iterator<AST> iterator() {
-        return IteratorUtils.values(operator, expression);
-    }
-
-    public Token getOperator() {
-        return operator;
+        return IteratorUtils.values(expression);
     }
 
     public Expression getExpression() {

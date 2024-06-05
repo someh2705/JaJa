@@ -266,6 +266,10 @@ public class Runtime {
             return new BindObject<>(Integer.valueOf(expression.getToken().field));
         }
 
+        if (expression.getToken().kind == TokenKind.STRINGLITERAL) {
+            return new BindObject<>(String.valueOf(expression.getToken().field));
+        }
+
         return new BindObject<>(expression.getToken(), expression.getToken().field);
     }
 
@@ -275,9 +279,23 @@ public class Runtime {
 
     private ResultObject evaluateDeclareVariableStatement(LocalVariableDeclarationStatement expression) {
         BindObject<?> evaluate = evaluate(expression.getExpression());
+        Token type = expression.getType();
+
+        if (type.kind == TokenKind.STRING) {
+            if (!(evaluate.getValue() instanceof String)) {
+                throw new Diagnostics("Require Type: String");
+            }
+        }
+
+        if (type.kind == TokenKind.INT) {
+            if (!(evaluate.getValue() instanceof Integer)) {
+                throw new Diagnostics("Require Type: int");
+            }
+        }
+
         environment.declare(expression.getIdentifier(), evaluate);
 
-        return new ResultObject(expression.getIdentifier().field + "(" + evaluate.getValue() + ")");
+        return new ResultObject(expression.getIdentifier().field + "(" + evaluate.message() + ")");
     }
 
     private BindObject<?> evaluateAssignmentExpression(AssignmentExpression expression) {

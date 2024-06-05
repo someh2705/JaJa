@@ -2,7 +2,6 @@ package io.jaja.statement;
 
 import io.jaja.AST;
 import io.jaja.expression.Expression;
-import io.jaja.expression.PrimaryExpression;
 import io.jaja.token.Token;
 import io.jaja.utils.IteratorUtils;
 
@@ -42,6 +41,10 @@ public class LocalVariableDeclarationStatement implements Statement {
     @Override
     public Iterator<AST> iterator() {
         return IteratorUtils.values(type, identifier, expression);
+    }
+
+    public Token getType() {
+        return type;
     }
 
     public Token getIdentifier() {

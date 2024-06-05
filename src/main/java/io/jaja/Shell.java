@@ -15,11 +15,11 @@ public class Shell {
     private static Runtime runtime = new Runtime();
 
     public static void main(String[] args) {
-        System.out.println("Welcome to Jaja");
-        System.out.println("1. #compile(filename): compile jaja file");
-        System.out.println("2. #print(expression): print expression");
-        System.out.println("3. #parse(): switch show AST expression flag");
-        System.out.println("4. #reset(): reset environment");
+        repl();
+    }
+
+    public static void repl() {
+        info();
 
         do {
             try {
@@ -28,6 +28,14 @@ public class Shell {
                 System.out.println(RED + "error: " + diagnostics.getMessage());
             }
         } while (true);
+    }
+
+    private static void info() {
+        System.out.println("Welcome to Jaja");
+        System.out.println("1. #compile(filename): compile jaja file");
+        System.out.println("2. #print(expression): print expression");
+        System.out.println("3. #parse(): switch show AST expression flag");
+        System.out.println("4. #reset(): reset environment");
     }
 
     private static void scanBlock(int blockCount, StringBuilder builder) {

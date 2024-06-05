@@ -152,6 +152,9 @@ public class BindObject<T> implements ShellResult {
 
     @Override
     public String message() {
+        if (value instanceof String) {
+            return "\"" + value + "\"";
+        }
         return String.valueOf(value);
     }
 

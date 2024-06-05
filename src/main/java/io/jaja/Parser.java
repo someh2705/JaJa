@@ -52,7 +52,7 @@ public class Parser {
     }
 
     private Statement parseMethodDeclarationStatement() {
-        if (!check(TokenKind.getPrimitiveTokens()) && !check(TokenKind.VOID)) {
+        if (!check(TokenKind.getPrimitiveTokens()) && !check(TokenKind.VOID) && !check(TokenKind.STRING)) {
             error("Unexpected token of declaration: " + peek());
         }
 
